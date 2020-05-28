@@ -156,3 +156,4 @@ nums2   1   2   3|
 nums1 = [3, 4]
 nums2 = [1, 2]
 findMedianSortedArrays(nums1, nums2)
+a=1
