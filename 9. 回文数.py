@@ -53,7 +53,7 @@ def isPalindrome(x: int) -> bool:
         e = e * 10 + c
         if e == x:  # 刚好到一半的情况
             return True
-        if e > x:  # 过了一半的情况，可能数字长度为奇数，此时再多加一个判断即e//10是否与前半段相等
+        if e > x:  # 过了一半的情况，此时数字长度为奇数，此时再多加一个判断即e//10是否与前半段相等
             break
     if e // 10 == x:
         return True
