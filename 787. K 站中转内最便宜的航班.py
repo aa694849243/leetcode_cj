@@ -45,6 +45,7 @@ import collections
 import heapq
 
 
+# 1 dijsktra
 class Solution:
     def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
         m = collections.defaultdict(list)
@@ -60,6 +61,26 @@ class Solution:
             for u, w_ in m[vj]:
                 heapq.heappush(q, (w + w_, time + 1, vj, u))
         return -1
+
+
+# 2bellman-ford 最短路径
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
+        distance = [[float('inf')] * (K + 2) for _ in range(n)]  # distance行表示点，列表示松弛次数，值代表最短距离
+        for i in range(K + 2):
+            distance[src][i] = 0  # 原点不管松弛几次距离本身都是0
+        times = 1  # 松弛次数
+
+        def relax(vi, vj, w, times):
+            if distance[vj][times] > distance[vi][times - 1] + w:
+                distance[vj][times] = distance[vi][times - 1] + w
+
+        while times < K + 2:  # 我们这里把直连一个点设置为松弛1次，绕过一个点算松弛2次，绕过两个点算松弛3次，以此类推，可以绕过K个点，那么可以松弛K+1次
+            for vi, vj, w in flights:
+                if distance[vi][times - 1] != None:
+                    relax(vi, vj, w, times)
+            times += 1
+        return distance[dst][K + 1] if distance[dst][K + 1] != float('inf') else -1
 
 
 Solution().findCheapestPrice(4, [[0, 1, 1], [0, 2, 5], [1, 2, 1], [2, 3, 1]], 0, 3, 1)
