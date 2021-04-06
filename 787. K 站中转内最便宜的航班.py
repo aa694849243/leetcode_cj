@@ -50,9 +50,16 @@ class Solution:
         m = collections.defaultdict(list)
         for sr, ds, w in flights:
             m[sr].append((ds, w))
-        visted = [0] * n
-        q = []
-        heapq.heappush((src, src, 0))
+        q = [(0, 0, src, src)]
         while q:
-            vi, vj, w = heapq.heappop()
+            w, time, vi, vj = heapq.heappop(q)
+            if time > K + 1:
+                continue
+            if vj == dst:
+                return w
+            for u, w_ in m[vj]:
+                heapq.heappush(q, (w + w_, time + 1, vj, u))
+        return -1
 
+
+Solution().findCheapestPrice(4, [[0, 1, 1], [0, 2, 5], [1, 2, 1], [2, 3, 1]], 0, 3, 1)
