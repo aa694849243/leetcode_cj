@@ -35,3 +35,30 @@ A[i] 的取值范围是 [0, A.length]。
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/smallest-rotation-with-highest-score
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
+from typing import List
+
+
+# 1差分思想 轮调 区间覆盖
+# 轮转次数做一个列表bad，bad的索引为轮转次数，值为不得分次数（取负值），遍历整个数组，每个数bad区间的位置全部减一，比如最后的结果为bad=[-1,-2,-2]，那么轮转次数为0为得分最大值，可以得2分，其他两个轮转都只能得1分，其他轮转次数总共只能得2分。为了线性时间操作，把bad改为差分序列，关于差分序列
+# https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/solution/de-fen-zui-gao-de-zui-xiao-lun-diao-by-leetcode/
+class Solution:
+    def bestRotation(self, A: List[int]) -> int:
+        n = len(A)
+        bad = [0] * n
+        for i, x in enumerate(A):
+            left, right = (i - x + 1) % n, (i + 1) % n  # 左闭右开
+            bad[left] -= 1
+            bad[right] += 1
+            if left > right:  # left==right是不可能的，如果left>right需要补充个0处，而边界处对于差分序列是不动的
+                bad[0] -= 1
+        ans = 0
+        best = -n
+        cur = 0
+        for i, score in enumerate(bad):
+            if (cur := score + cur) > best:
+                best = cur
+                ans = i
+        return ans
+
+
+Solution().bestRotation([2, 3, 1, 4, 0])
