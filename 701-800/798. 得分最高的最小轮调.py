@@ -61,4 +61,37 @@ class Solution:
         return ans
 
 
-Solution().bestRotation([2, 3, 1, 4, 0])
+# 2懒惰传播+线段树,这个只能求区间最大值，无法求index是多少
+import collections
+
+
+# class Solution:
+#     def __init__(self):
+#         self.lazy = collections.defaultdict(int)
+#         self.tree = collections.defaultdict(int)
+#
+#     def bestRotation(self, A: List[int]) -> int:
+#         def update(s, e, l, r, id=0):
+#             if r <= s or e <= l:
+#                 return
+#             if s <= l < r <= e:
+#                 self.lazy[id] += 1
+#                 self.tree[id] += 1
+#             else:
+#                 mid = (l + r) // 2
+#                 update(s, e, l, mid, 2 * id + 1)
+#                 update(s, e, mid, r, 2 * id + 2)
+#                 self.tree[id] = self.lazy[id] + max(self.tree[2 * id + 1], self.tree[2 * id + 2])
+#
+#         for i, x in enumerate(A):  # good区间与bad区间互补
+#             right = (i - x + 1) % len(A)
+#             left = (i + 1) % len(A)
+#             if left < right:
+#                 update(left, right, 0, 20001, 0)
+#             else:
+#                 update(left, len(A), 0, 20001, 0)
+#                 update(0, right, 0, 20001, 0)
+#         return self.tree[0]
+
+
+Solution().bestRotation([1, 3, 0, 2, 4])

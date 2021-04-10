@@ -188,18 +188,23 @@ class Solution(object):
             l, r = positions[i][0], positions[i][0] + positions[i][1] - 1
             m |= {l, r}
         m = sorted(list(m))
-        index = {x: i for i, x in enumerate(m)}
+        rank = {}
+        r = 0
+        for s in m:
+            if s not in rank:
+                rank[s] = r
+                r += 1
 
-        def query(s, e, l, r, id):
+        def query(s, e, l, r, id):  # query找到目前s,e覆盖区间的最高高度
             if s >= r or l >= e:
                 return 0
             if s <= l < r <= e:
                 return self.tree[id]
             else:
                 mid = (l + r) // 2
-                return max(self.lazy[id],query(s, e, l, mid, 2 * id + 1), query(s, e, mid, r,2 * id + 2))
+                return max(self.lazy[id], query(s, e, l, mid, 2 * id + 1), query(s, e, mid, r, 2 * id + 2))
 
-        def update(s, e, l, r, h, id=0):
+        def update(s, e, l, r, h, id=0):  # 更新l,r所在区间的最高高度
             if s >= r or l >= e:
                 return
             if s <= l < r <= e:
@@ -213,10 +218,10 @@ class Solution(object):
 
         ans = []
         for l, length in positions:
-            L = index[l]
-            R = index[l + length - 1]
-            h = query(L, R + 1, 0, len(index), 0) + length
-            update(L, R + 1, 0, len(index), h, 0)
+            L = rank[l]
+            R = rank[l + length - 1]
+            h = query(L, R + 1, 0, len(rank), 0) + length
+            update(L, R + 1, 0, len(rank), h, 0)
             ans.append(self.tree[0])
         return ans
 
