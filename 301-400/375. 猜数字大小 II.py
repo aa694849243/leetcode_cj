@@ -36,8 +36,7 @@ class Solution:
                 return 0
             m = float('inf')
             for n in range((i + j) // 2, j + 1):  # 从（i+j）//2开始总体开销会更小
-                m = min(m,
-                        n + max(rec(i, n - 1), rec(n + 1, j)))  # 从range((i + j) // 2, j + 1)范围取数，计算每种情况最大开销，最终选择其中的最小值
+                m = min(m, n + max(rec(i, n - 1), rec(n + 1, j)))  # 从range((i + j) // 2, j + 1)范围取数，计算每种情况最大开销，最终选择其中的最小值
             return m
 
         return rec(1, n)
@@ -50,9 +49,7 @@ class Solution:
         for k in range(1, n):  # k代表i,j间隔
             for i in range(n - k):
                 j = i + k  # 间隔逐渐扩大
-                dp[i][j] = min(
-                    pivot + 1 + max(dp[i][pivot - 1] if pivot - 1 > i else 0, dp[pivot + 1][j] if pivot + 1 < j else 0)
-                    for pivot in range((i + j) // 2, j + 1))
+                dp[i][j] = min(pivot + 1 + max(dp[i][pivot - 1] if pivot - 1 > i else 0, dp[pivot + 1][j] if pivot + 1 < j else 0) for pivot in range((i + j) // 2, j + 1))
 
         return dp[0][n - 1]
 

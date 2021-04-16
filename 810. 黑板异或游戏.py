@@ -30,8 +30,12 @@
 #  Related Topics 数学
 #  👍 34 👎 0
 
-
+#位操作 奇偶
 from typing import List
+import operator
+from functools import reduce
 class Solution:
     def xorGame(self, nums: List[int]) -> bool:
+        return reduce(operator.xor,nums)==0 or not len(nums)%2
+
 
