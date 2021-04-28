@@ -100,7 +100,7 @@ class Solution:
                 if i % 4 == 3 and count % 2 != 0:
                     return False
             i += 1
-        return c % 4 != 3
+        return c % 4 != 3  # 自己本身是否能是4k+3
 
 
 Solution().judgeSquareSum(5726)

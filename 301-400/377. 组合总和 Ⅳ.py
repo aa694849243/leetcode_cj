@@ -52,7 +52,7 @@ class Solution:
         return rec(nums, target)
 
 
-# 动态规划
+# 2动态规划
 class Solution:
     def combinationSum4(self, nums: List[int], target: int) -> int:
         dp = [0] * (target + 1)
@@ -60,8 +60,19 @@ class Solution:
         for i in range(1, target + 1):
             for num in nums:
                 if i >= num:
-                    dp[i] += dp[i - num] #dp[i-num]表示当最后一个选择num时之前的组合总数，此时选择num刚好等于最终值
+                    dp[i] += dp[i - num]  # dp[i-num]表示当最后一个选择num时之前的组合总数，此时选择num刚好等于最终值
+                    # 考虑排列问题的关键在是否将num设置为最后一个加入的
         return dp[-1]
+
+
+# class Solution:
+#     def combinationSum4(self, nums: List[int], target: int) -> int:
+#         dp = [0] * (target + 1)
+#         dp[0] = 1  # 当目标值i==num时，表示有一个组合符合要求
+#         for num in nums:
+#             for i in range(num, target + 1):
+#                 dp[i] += dp[i-num]
+#         return dp[-1]
 
 
 a = [1, 2, 3]

@@ -35,9 +35,9 @@ import collections
 class Solution:
     def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
         dp = [[0] * (m + 1) for _ in range(n + 1)]
-        mem=[]
+        mem = []
         for s in strs:
-            mem.append([collections.Counter(s)['0'],collections.Counter(s)['1']])
+            mem.append([collections.Counter(s)['0'], collections.Counter(s)['1']])
 
         for k in mem:
             for i in range(m, -1, -1):
@@ -45,7 +45,20 @@ class Solution:
                     m_ = k[0]
                     n_ = k[1]
                     if i >= m_ and j >= n_:
-                        dp[j][i] = max(dp[j - n_][i-m_] + 1, dp[j][i])
+                        dp[j][i] = max(dp[j - n_][i - m_] + 1, dp[j][i])
+        return dp[-1][-1]
+
+
+class Solution:
+    def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        mem = []
+        for s in strs:
+            mem.append([collections.Counter(s)['0'], collections.Counter(s)['1']])
+        for k in mem:
+            for i in range(m, k[0] - 1, -1):
+                for j in range(n, k[1] - 1, -1):
+                    dp[i][j] =max(dp[i - k[0]][j - k[1]] + 1,dp[i][j])
         return dp[-1][-1]
 
 

@@ -30,20 +30,21 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
 from typing import List
 
-
+#0-1背包问题
+# https://leetcode-cn.com/problems/target-sum/solution/494-mu-biao-he-dong-tai-gui-hua-zhi-01be-78ll/
 class Solution:
     def findTargetSumWays(self, nums: List[int], S: int) -> int:
         if S > sum(nums) or S < -sum(nums):
             return 0
         S = -S if S < 0 else S
-        p=(sum(nums)+S)
-        if p%2:
+        p = (sum(nums) + S)
+        if p % 2:
             return 0
-        p//=2
-        dp = [1]+[0]*p
+        p //= 2
+        dp = [1] + [0] * p
         for num in nums:
-            for target in range(p,num-1,-1):
-                dp[target]+=dp[target-num]
+            for target in range(p, num - 1, -1):
+                dp[target] += dp[target - num]
         return dp[p]
 
 

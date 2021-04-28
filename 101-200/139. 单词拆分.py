@@ -40,6 +40,21 @@ class Solution:
         return dp[-1]
 
 
+import collections
+
+
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        dp = [False for _ in range(len(s) + 1)]  # 初始化，长度+1
+        dp[0] = True  # 0号位为True
+        for i in range(1, len(s) + 1):
+            for word in wordDict:
+                if len(word) <= i:
+                    if word == s[i - len(word):i]:
+                        dp[i] = True if dp[i - len(word)] else dp[i]
+        return dp[-1]
+
+Solution().wordBreak("leetcode", ["leet","code"])
 # 动态规划---
 # class Solution:
 #     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
