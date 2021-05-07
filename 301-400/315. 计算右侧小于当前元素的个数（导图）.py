@@ -49,7 +49,6 @@ class Solution:
         buckets = self.discretization(nums)
         for i in range(len(nums) - 1, -1, -1):
             count[i] = self.quiry(buckets[i] - 1)
-
             self.update(buckets[i])
         return count
 
