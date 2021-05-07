@@ -26,9 +26,7 @@ from functools import reduce
 
 class Solution:
     def singleNumber(self, nums: List[int]) -> int:
-        class Solution:
-            def singleNumber(self, nums: List[int]) -> int:
-                return reduce(lambda x, y: x ^ y, nums)
+        return reduce(lambda x, y: x ^ y, nums)
 
         # 作者：LeetCode - Solution
         # 链接：https: // leetcode - cn.com / problems / single - number / solution / zhi - chu - xian - yi - ci - de - shu - zi - by - leetcode - solution /

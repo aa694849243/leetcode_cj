@@ -33,6 +33,7 @@ class TreeNode(object):
         self.right = None
 
 
+# 不完美解法
 class Codec:
     def __init__(self):
         self.idx = -1
@@ -75,5 +76,75 @@ class Codec:
                 return node
 
         return dfs()
+
+
 # 前序+中序（后序+中序）唯一确定一颗棵树 https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/ni-mei-jian-guo-de-chuan-xin-ban-ben-qian-xu-zhong/
 # 深度 or 广度优先遍历 https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/solution/shen-du-you-xian-he-yan-du-you-xian-de-golangpytho/
+
+# 2 前序+中序确定两个序列，再反序列化
+import collections
+
+
+class Codec:
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return []
+        inorder = []
+        preorder = []
+        map = {}
+        m = collections.defaultdict(int)
+
+        def indfs(node):
+            if not node:
+                return
+            indfs(node.left)
+            m[node.val] += 1
+            unqstr = str(node.val) + ';' + str(m[node.val])
+            map[node] = unqstr
+            inorder.append(unqstr)
+            indfs(node.right)
+
+        def predfs(node):
+            if not node:
+                return
+            preorder.append(map[node])
+            predfs(node.left)
+            predfs(node.right)
+        indfs(root)
+        predfs(root)
+
+        return ','.join(preorder) + '+' + ','.join(inorder)
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+
+        :type data: str
+        :rtype: TreeNode
+        """
+        if not data:
+            return None
+        preorder, inorder = data.split('+')
+        preorder = preorder.split(',')
+        inorder = inorder.split(',')
+        index = {unqstr: i for i, unqstr in enumerate(inorder)}
+
+        def build(pb, pe, ib, ie):
+            if pb > pe:
+                return None
+            root = TreeNode(int(preorder[pb].split(';')[0]))
+            im = index[preorder[pb]]
+            n = im - ib  # 左子树有n个节点
+            root.left = build(pb + 1, pb + n, ib, ib + n - 1)
+            root.right = build(pb + n + 1, pe, im + 1, ie)
+            return root
+
+        return build(0, len(preorder) - 1, 0, len(preorder) - 1)
+from leetcode.trick.treenode.T import stringToTreeNode
+a=stringToTreeNode('[1,2,3,null,null,4,5]')
+a=Codec().serialize(a)
+Codec().deserialize(a)

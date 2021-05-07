@@ -52,8 +52,18 @@ class Solution:
             return node
 
         return mybuild(0, len(inorder) - 1)
+#存储数量+坐标
+class Solution:
+    def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
+
+        def mybuild(l,r,n):
+            if n==0:
+                return None
+            elif n==1:
+                return pre
 
 
+        return mybuild(0, len(inorder) - 1)
 inorder=[9,3,15,20,7]
 postorder=[9,15,7,20,3]
 Solution().buildTree(inorder, postorder)

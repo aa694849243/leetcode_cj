@@ -21,7 +21,7 @@
 from typing import List
 
 
-# 数学 位运算
+# 数学 位运算 电路设计
 class Solution:
     def singleNumber(self, nums: List[int]) -> int:
         seen_once = seen_twice = 0

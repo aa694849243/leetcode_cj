@@ -49,7 +49,6 @@ class Solution:
         buckets = self.discretization(nums)
         for i in range(len(nums) - 1, -1, -1):
             count[i] = self.quiry(buckets[i] - 1)
-
             self.update(buckets[i])
         return count
 
@@ -65,7 +64,7 @@ class Solution:
             self.c[num] += 1
             num += self.lowbit(num)
 
-
+Solution().countSmaller([5,2,6,1])
 # 投机取巧法
 import bisect
 

@@ -93,10 +93,11 @@ class Solution:
                 for k in [jumpsize - 1, jumpsize, jumpsize + 1]:
                     if k < 1:
                         continue
-                    if stones[i]+k==stones[-1]:
+                    if stones[i] + k == stones[-1]:
                         return True
                     if stones[i] + k in mem:
                         mem[stones[i] + k].add(k)
         return False
+
 
 Solution().canCross([0, 1, 2, 3, 4, 8, 9, 11])
