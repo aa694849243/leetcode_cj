@@ -17,7 +17,6 @@
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/remove-duplicate-letters
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-import collections
 
 
 class Solution:
@@ -48,16 +47,18 @@ class Solution:
 
 # 精妙递归
 import collections
+
+
 class Solution:
     def removeDuplicateLetters(self, s: str) -> str:
-        c=collections.Counter(s)
-        pos=0
+        c = collections.Counter(s)
+        pos = 0
         for i in range(len(s)):
-            if s[i]<s[pos]:pos=i
-            c[s[i]]-=1
-            if c[s[i]]==0:
+            if s[i] < s[pos]: pos = i
+            c[s[i]] -= 1
+            if c[s[i]] == 0:  # pos必然在i前面，如果s[i]用光了还继续遍历而pos更新的话就有会损失掉s[i]
                 break
-        return s[pos]+self.removeDuplicateLetters(s[pos:].replace(s[pos],'')) if s else ''
+        return s[pos] + self.removeDuplicateLetters(s[pos:].replace(s[pos], '')) if s else ''
 
 
 b = "cbacdcbc"

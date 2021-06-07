@@ -28,8 +28,8 @@ strs[i] 仅由 '0' 和 '1' 组成
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/ones-and-zeroes
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-from typing import List
 import collections
+from typing import List
 
 
 class Solution:
@@ -49,6 +49,7 @@ class Solution:
         return dp[-1][-1]
 
 
+# 多位点动态规划
 class Solution:
     def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
         dp = [[0] * (n + 1) for _ in range(m + 1)]
@@ -58,7 +59,7 @@ class Solution:
         for k in mem:
             for i in range(m, k[0] - 1, -1):
                 for j in range(n, k[1] - 1, -1):
-                    dp[i][j] =max(dp[i - k[0]][j - k[1]] + 1,dp[i][j])
+                    dp[i][j] = max(dp[i - k[0]][j - k[1]] + 1, dp[i][j])
         return dp[-1][-1]
 
 

@@ -35,15 +35,18 @@ class Solution:
         return (a + sys.float_info.epsilon) % 1 <= 2 * sys.float_info.epsilon
 
 
-#位操作  位运算
+# 位操作  位运算
 class Solution:
     def isPowerOfFour(self, num: int) -> bool:
-        return num>0 and num&(num-1)==0 and num&int('10'*16,2)==0
-#位操作 数学 位运算
-#数学解释看题解
+        return num > 0 and num & (num - 1) == 0 and num & int('10' * 16, 2) == 0
+
+
+# 位操作 数学 位运算
+# 指数取模 蒙哥马利算法 https://blog.csdn.net/treasure_wang/article/details/84707869
+
 class Solution:
     def isPowerOfFour(self, num: int) -> bool:
         return num > 0 and num & (num - 1) == 0 and num % 3 == 1
 
 
-Solution().isPowerOfFour(4**9)
+Solution().isPowerOfFour(4 ** 9)

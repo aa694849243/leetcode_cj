@@ -65,9 +65,9 @@ class Solution:
         dp = [[0] * n for _ in range(n)]
         for delta in range(k - 1, n):
             for i in range(n - delta):
-                a = [dp[i][x] + dp[x + 1][i + delta] for x in range(i, i+delta, k - 1)]
+                a = [dp[i][x] + dp[x + 1][i + delta] for x in range(i, i + delta, k - 1)]
                 dp[i][i + delta] = (min(a) if a else 0) + (prefix[i + delta + 1] - prefix[i] if delta % (k - 1) == 0 else 0)
         return dp[0][n - 1]
 
 
-Solution().mergeStones(stones=[3, 5, 1, 2, 6], k=3)
+Solution().mergeStones(stones=[3, 5, 1, 2, 6, 9, 12, 23, 7], k=5)

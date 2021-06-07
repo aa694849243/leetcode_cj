@@ -17,8 +17,8 @@
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/basic-calculator-iv
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-from typing import List
 import collections
+from typing import List
 
 
 # 表达式解析类问题
@@ -207,4 +207,115 @@ class Solution:
         return a.to_list()
 
 
-Solution().basicCalculatorIV("a * b * c + b * a * c * 4", [], [])
+import re
+from collections import namedtuple
+
+left = r'(?P<LEFT>\()'
+right = r'(?P<RIGHT>\))'
+var = r'(?P<VAR>[a-z]+)'
+num = r'(?P<NUM>\d+)'
+add = r'(?P<ADD>\+)'
+sub = r'(?P<SUB>\-)'
+mul = r'(?P<MUL>\*)'
+blank = r'(?P<BLANK>\s+)'
+token = namedtuple('token', ('type', 'val'))
+pt = re.compile('|'.join([left, right, add, sub, mul, num, var, blank]))
+
+
+def gentoken(s):
+    sc = pt.scanner(s)
+    for i in iter(sc.match, None):
+        if i.lastgroup != 'BLANK':
+            yield token(i.lastgroup, i.group(0))
+
+
+class parser:
+    def __init__(self, V):
+        self.var = V
+
+    def match(self, tp=None):
+        if self.p.type == tp or not tp:
+            val = self.p.val
+            try:
+                self.p = next(self.gen)
+            except StopIteration:
+                self.p = None
+            except Exception as e:
+                print(e)
+            return val
+        else:
+            raise Exception(f'[Error]: {tp} except, get {self.p.type} get')
+
+    def parse(self, s):
+        self.gen = gentoken(s)
+        self.p = next(self.gen)
+        dic = self.expr()
+        return dic
+
+    def expr(self):
+        dic1 = self.term()
+        while self.p and self.p.type in ['SUB', 'ADD']:
+            sign = 1 if self.match() == '+' else -1
+            dic2 = self.term()
+            for var2 in dic2:
+                if var2 in dic1:
+                    dic1[var2] += sign * dic2[var2]
+                else:
+                    dic1[var2] = sign * dic2[var2]
+        return dic1
+
+    def term(self):
+        dic1 = self.item()
+        while self.p and self.p.type == 'MUL':
+            self.match()
+            dic2 = self.item()
+            newdic = {}
+            for var1 in dic1:
+                for var2 in dic2:
+                    if var1 == '':
+                        s = var2
+                    elif var2 == '':
+                        s = var1
+                    else:
+                        s = '*'.join(sorted(var1.split('*') + var2.split('*')))
+                    if s in newdic:
+                        newdic[s] += dic1[var1] * dic2[var2]
+                    else:
+                        newdic[s] = dic1[var1] * dic2[var2]
+            dic1 = newdic
+        return dic1
+
+    def item(self):
+        if self.p.type == 'NUM':
+            return {'': int(self.match('NUM'))}
+        elif self.p.type == 'VAR':
+            if self.p.val in self.var:
+                return {'': self.var[self.match('VAR')]}
+            else:
+                return {self.match('VAR'): 1}
+        elif self.p.type == 'LEFT':
+            self.match('LEFT')
+            dic = self.expr()
+            self.match('RIGHT')
+            return dic
+        else:
+            raise Exception('invalid string')
+
+
+class Solution:
+    def basicCalculatorIV(self, expression: str, evalvars: List[str], evalints: List[int]) -> List[str]:
+        self.var = dict(zip(evalvars, evalints))
+        dic = parser(self.var).parse(expression)
+        ret = []
+        n = dic.pop('') if '' in dic else 0
+        li = sorted(dic, key=lambda x: (-x.count('*'), x))
+        for key in li:
+            if dic[key] != 0:
+                s = str(dic[key]) + '*' + key
+                ret.append(s)
+        if n != 0:
+            ret.append(str(n))
+        return ret
+
+
+Solution().basicCalculatorIV(expression = "e - 8 + temperature - pressure", evalvars = ["e", "temperature"], evalints = [1, 12])
