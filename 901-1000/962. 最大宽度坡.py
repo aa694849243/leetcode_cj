@@ -61,7 +61,7 @@ class Solution:
                 if num < stack[-1][1]:
                     stack.append((i, num))
         for i in range(len(nums) - 1, -1, -1):
-            while stack and nums[i] >= stack[-1][1]:
+            while stack and nums[i] >= stack[-1][1]: #如果大于栈顶与之前弹出的元素，那么说明一定大于栈顶元素
                 ans = max(ans, i - stack[-1][0])
                 stack.pop()
                 if not stack:  # 栈空，提前结束

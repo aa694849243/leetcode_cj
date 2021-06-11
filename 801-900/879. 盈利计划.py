@@ -61,14 +61,14 @@ class Solution:
         return sum(dp[i][j] for i in range(n + 1) for j in range(minProfit, a + 1)) % mod
 
 
-# 顺着做，需要做两个dp，因为是0-1背包，防止覆盖
+# 顺着做，需要做两个dp，因为是0-1背包，防止覆盖 多限制条件动态规划
 class Solution:
     def profitableSchemes(self, n: int, minProfit: int, group: List[int], profit: List[int]) -> int:
         mod = 10 ** 9 + 7
         dp = [[0] * (minProfit + 1) for _ in range(n + 1)]
         dp[0][0] = 1
         for i, num in enumerate(group):
-            dp2 = [row[:] for row in dp]
+            dp2 = [row[:] for row in dp] #每一轮加入一个group更新dp
             for j in range(n, num - 1, -1):
                 for k in range(minProfit + 1):
                     p = min(minProfit, k + profit[i])
