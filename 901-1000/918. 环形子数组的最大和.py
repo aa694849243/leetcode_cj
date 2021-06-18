@@ -54,12 +54,11 @@
 #  Related Topics 数组
 #  👍 157 👎 0
 
-from typing import List
-
+import collections
 # kadane算法 最大连续子数组和
 # 1 右水位线
 import itertools
-import collections
+from typing import List
 
 
 class Solution:
@@ -93,13 +92,13 @@ class Solution:
         n = len(A)
         ans = max(A)
         A = A + A
-        q = collections.deque([0])
+        q = collections.deque([0])  # q存储index
         cum = [0] + [*itertools.accumulate(A)]
         for i in range(1, len(cum)):
             while i - q[0] > n:
                 q.popleft()
             ans = max(ans, cum[i] - cum[q[0]])
-            while q and cum[i] < cum[q[-1]]:
+            while q and cum[i] < cum[q[-1]]:  # cum[i]<cum[q[-1]]说明A[i]为负数，将谷底的点储存进去，这样每次q[0]存的都是最低点
                 q.pop()
             q.append(i)
         return ans
@@ -123,6 +122,7 @@ class Solution:
         c = kadane(A[:-1])  # 同上
         return max(ans1, s + b, s + c)
 
+Solution().maxSubarraySumCircular([-1,-16,193])
 # 3两侧区间 循环数组 变换大小规则
 class Solution:
     def maxSubarraySumCircular(self, A: List[int]) -> int:
@@ -133,15 +133,20 @@ class Solution:
                 cur = x + max(cur, 0)
                 ans = max(ans, cur)
             return ans
-        a=kadane(A)
+
+        a = kadane(A)
+
         def kadane2(B):
-            ans=float('inf')
-            cur=0
+            ans = float('inf')
+            cur = 0
             for x in B:
-                cur=x+min(cur,0)
-                ans=min(cur,ans)
+                cur = x + min(cur, 0)
+                ans = min(cur, ans)
             return ans
-        b=kadane2(A[1:])
-        c=kadane2(A[:-1])
-        return max(a,sum(A)-b,sum(A)-c)
-Solution().maxSubarraySumCircular([-2,-3,-1])
+
+        b = kadane2(A[1:])
+        c = kadane2(A[:-1])
+        return max(a, sum(A) - b, sum(A) - c)
+
+
+Solution().maxSubarraySumCircular([-2, -3, -1])

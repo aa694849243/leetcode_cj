@@ -63,12 +63,17 @@ class Solution:
                 c = "blank"
             elif c in "+-":
                 c = "sign"
+            elif c in 'eE':
+                c = 'e'
             if c not in state[cur_state]:
                 return False
             cur_state = state[cur_state][c]
         if cur_state not in [3, 5, 8, 9]:
             return False
         return True
+
+
+Solution().isNumber("1E9")
 
 
 class Solution:
@@ -82,28 +87,31 @@ class Solution:
                          [8, -1, 6, 3, 4, -1],
                          [-1, -1, 5, -1, -1, -1],
                          [8, -1, -1, -1, -1, -1]]
-        self.state=0
-    def enter(self,c):
+        self.state = 0
+
+    def enter(self, c):
         if c == ' ':
             return 0
-        elif c in ('+','-'):
+        elif c in ('+', '-'):
             return 1
         elif c.isdigit():
             return 2
-        elif c =='.':
+        elif c == '.':
             return 3
-        elif c =='e':
+        elif c == 'e':
             return 4
         else:
             return 5
-    def get_state(self,c):
-        self.state=self.transfer[self.state][self.enter(c)]
+
+    def get_state(self, c):
+        self.state = self.transfer[self.state][self.enter(c)]
+
     def isNumber(self, s: str) -> bool:
         for i in s:
             self.get_state(i)
-            if self.state==-1:
-                return  False
-        return True if self.state in (6,8,5,3) else False
+            if self.state == -1:
+                return False
+        return True if self.state in (6, 8, 5, 3) else False
 
 
 Solution().isNumber('.. ')
