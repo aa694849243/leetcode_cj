@@ -1,63 +1,48 @@
 import collections
+from typing import List
 
 
-class Solution(object):
-    def catMouseGame(self, graph):
-        N = len(graph)
+class Solution:
+    def isSolvable(self, words: List[str], result: str) -> bool:
+        _weight = dict()
+        _lead_zero = set()
+        for word in words:
+            for i, ch in enumerate(word[::-1]):
+                _weight[ch] = _weight.get(ch, 0) + 10 ** i
+            if len(word) > 1:
+                _lead_zero.add(word[0])
+        for i, ch in enumerate(result[::-1]):
+            _weight[ch] = _weight.get(ch, 0) - 10 ** i
+        if len(result) > 1:
+            _lead_zero.add(result[0])
 
-        # What nodes could play their turn to
-        # arrive at node (m, c, t) ?
-        def parents(m, c, t):
-            if t == 2:
-                for m2 in graph[m]:
-                    yield m2, c, 3 - t
-            else:
-                for c2 in graph[c]:
-                    if c2:
-                        yield m, c2, 3 - t
+        weight = sorted(list(_weight.items()), key=lambda x: -abs(x[1]))
+        suffix_sum_min = [0] * len(weight)
+        suffix_sum_max = [0] * len(weight)
+        for i in range(len(weight)):
+            suffix_pos = sorted(x[1] for x in weight[i:] if x[1] > 0)
+            suffix_neg = sorted(x[1] for x in weight[i:] if x[1] < 0)
+            suffix_sum_min[i] = sum((len(suffix_pos) - 1 - j) * elem for j, elem in enumerate(suffix_pos)) + sum(
+                (9 - j) * elem for j, elem in enumerate(suffix_neg))
+            suffix_sum_max[i] = sum((10 - len(suffix_pos) + j) * elem for j, elem in enumerate(suffix_pos)) + sum(
+                j * elem for j, elem in enumerate(suffix_neg))
 
-        DRAW, MOUSE, CAT = 0, 1, 2
-        color = collections.defaultdict(int)
+        lead_zero = [int(ch in _lead_zero) for (ch, _) in weight]
+        used = [0] * 10
 
-        # degree[node] : the number of neutral children of this node
-        degree = {}
-        for m in range(N):
-            for c in range(N):
-                degree[m, c, 1] = len(graph[m])
-                degree[m, c, 2] = len(graph[c]) - (0 in graph[c])
+        def dfs(pos, total):
+            if pos == len(weight):
+                return total == 0
+            if not total + suffix_sum_min[pos] <= 0 <= total + suffix_sum_max[pos]:
+                return False
+            for i in range(lead_zero[pos], 10):
+                if not used[i]:
+                    used[i] = True
+                    check = dfs(pos + 1, total + weight[pos][1] * i)
+                    used[i] = False
+                    if check:
+                        return True
+            return False
 
-        # enqueued : all nodes that are colored
-        queue = collections.deque([])
-        for i in range(N):
-            for t in range(1, 3):
-                color[0, i, t] = MOUSE
-                queue.append((0, i, t, MOUSE))
-                if i > 0:
-                    color[i, i, t] = CAT
-                    queue.append((i, i, t, CAT))
-
-        # percolate
-        while queue:
-            # for nodes that are colored :
-            i, j, t, c = queue.popleft()
-            # for every parent of this node i, j, t :
-            for i2, j2, t2 in parents(i, j, t):
-                # if this parent is not colored :
-                if color[i2, j2, t2] is DRAW:
-                    # if the parent can make a winning move (ie. mouse to
-                    # MOUSE), do so
-                    if t2 == c:  # winning move
-                        color[i2, j2, t2] = c
-                        queue.append((i2, j2, t2, c))
-                    # else, this parent has degree[parent]--, and enqueue if all children
-                    # of this parent are colored as losing moves
-                    else:
-                        degree[i2, j2, t2] -= 1
-                        if degree[i2, j2, t2] == 0:
-                            color[i2, j2, t2] = 3 - t2
-                            queue.append((i2, j2, t2, 3 - t2))
-
-        return color[1, 2, 1]
-
-
-Solution().catMouseGame([[2, 3], [3, 4], [0, 4], [0, 1], [1, 2]])
+        return dfs(0, 0)
+Solution().isSolvable(["HOPE","THIS","HELPS","OTHER"], "PEOPLE")
