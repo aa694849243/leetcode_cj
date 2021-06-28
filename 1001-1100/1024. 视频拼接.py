@@ -100,3 +100,23 @@ class Solution:
                 ret += 1
                 pre = last
         return ret
+class Solution:
+    def videoStitching(self, clips: List[List[int]], time: int) -> int:
+        next=[-1]*(time+1)
+        for l,r in clips:
+            if l>time:
+                continue
+            next[l]=max(next[l],min(time,r))
+        breakpoint,furthest=0,float('-inf')
+        cnt=0
+        for i in range(time+1):
+            furthest=max(next[i],furthest)
+            if i==breakpoint:
+                if furthest<=i:
+                    return -1
+                cnt+=1
+                if furthest>=time:
+                    break
+                breakpoint=furthest
+        return cnt
+Solution().videoStitching([[3,12],[7,14],[9,14],[12,15],[0,9],[4,14],[2,7],[1,11]], 10)
