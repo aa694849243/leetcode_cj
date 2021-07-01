@@ -34,7 +34,7 @@
 #  👍 84 👎 0
 
 import functools
-
+# 数位dp
 #https://leetcode-cn.com/problems/numbers-with-repeated-digits/solution/pai-lie-shu-qiu-jie-by-wzhaooooo/
 class Solution:
     def numDupDigitsAtMostN(self, n: int) -> int:
