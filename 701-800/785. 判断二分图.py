@@ -38,7 +38,7 @@ graph[u] 的所有值 互不相同
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
 from typing import List
 
-
+# 二分图
 # 1 dfs
 class Solution:
     def isBipartite(self, graph: List[List[int]]) -> bool:

@@ -42,7 +42,7 @@ class Solution:
                 return ans
 
 
-# 2位操作
+# 2位操作 分两堆，一堆少一个，一堆多一个
 class Solution:
     def findErrorNums(self, nums: List[int]) -> List[int]:
         a = 0
