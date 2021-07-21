@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import collections, heapq, itertools, bisect
 from typing import List
+
+
 # 小王来到了游乐园，她玩的第一个项目是模拟推销员。有一个二维平面地图，其中散布着 N 个推销点，编号 0 到 N-1，不存在三点共线的情况。每两点之间有一条直
 # 线相连。游戏没有规定起点和终点，但限定了每次转角的方向。首先，小王需要先选择两个点分别作为起点和终点，然后从起点开始访问剩余 N-2 个点恰好一次并回到终点。访
 # 问的顺序需要满足一串给定的长度为 N-2 由 L 和 R 组成的字符串 direction，表示从起点出发之后在每个顶点上转角的方向。根据这个提示，小王希望你能
@@ -43,3 +44,35 @@ from typing import List
 
 class Solution:
     def visitOrder(self, points: List[List[int]], direction: str) -> List[int]:
+        start = points.index(min(points))
+        ans = [start]
+        points = [complex(*a) for a in points]
+        n = len(points)
+        visted = [False] * n
+        visted[start] = True
+
+        def cross(a1, b1, a2, b2):
+            return a1 * b2 - b1 * a2
+
+        for dir in direction:
+            a = points[ans[-1]]
+            prev = -1
+            for nxt, b in enumerate(points):
+                if not visted[nxt]:
+                    ab = b - a
+                    if dir == 'L':  # 下一个转向为左，找到最右的点
+                        if prev == -1 or cross(prev.real, prev.imag, ab.real, ab.imag) < 0:
+                            prev = ab
+                            flag = nxt
+                    else:
+                        if prev == -1 or cross(prev.real, prev.imag, ab.real, ab.imag) > 0:
+                            prev = ab
+                            flag = nxt
+            visted[flag] = True
+            ans.append(flag)
+        for i in range(n):
+            if not visted[i]:
+                ans.append(i)
+                break
+        return ans
+Solution().visitOrder(points = [[1,1],[1,4],[3,2],[2,1]], direction = "LL")

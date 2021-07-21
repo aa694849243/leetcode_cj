@@ -53,7 +53,7 @@ p = "mis*is*p*."
 # --------------------------------回溯法---------------------------------------------------------------------------------
 def isMatch(s: str, p: str) -> bool:
     if not p: return not s  # p为空时，s为空才匹配
-    first_match = len(s[0]) > 0 and p[0] in ('.', s[0])
+    first_match = len(s) > 0 and p[0] in ('.', s[0])
     if len(p) >= 2 and p[1] == '*':  # 遇到‘*’号时处理方式
         return isMatch(s, p[2:]) or (isMatch(s[1:], p) and first_match)  # p[2]及其之后的继续比对，如果第一个对上了，则将s[0]删掉，继续比对
     else:
@@ -89,7 +89,7 @@ def isMatch(s: str, p: str) -> bool:
                 ans = i == len(s)
             else:
                 if j + 1 < len(p) and p[j + 1] == '*':
-                    ans = match(j + 2, i) and (p[j] in ('.', s[i]) and i < len(s))
+                    ans = match(j + 2, i) or (p[j] in ('.', s[i]) and i < len(s))
                 else:
                     ans = (i < len(s) and p[j] in ('.', s[i])) and match(j + 1, i + 1)
             memo[j, i] = ans
