@@ -65,30 +65,32 @@ class Solution:
             while li[-1] - li[0] > limit:
                 li.remove(nums[l])
                 l += 1
-            ans=max(ans,i-l+1)
+            ans = max(ans, i - l + 1)
         return ans
-#2双单调队列
+
+
+# 2双单调队列
 class Solution:
     def longestSubarray(self, nums: List[int], limit: int) -> int:
-        qde=collections.deque() #递减栈
-        qae=collections.deque() #递增栈
-        l,r=0,0
-        ans=1
-        while r<len(nums):
-            while qde and nums[r]>nums[qde[-1]]: #存入栈里的要尽可能往左
+        qde = collections.deque()  # 递减栈
+        qae = collections.deque()  # 递增栈
+        l, r = 0, 0
+        ans = 1
+        while r < len(nums):
+            while qde and nums[r] > nums[qde[-1]]:  # 存入栈里的要尽可能往左
                 qde.pop()
-            while qae and nums[r]<nums[qae[-1]]:
+            while qae and nums[r] < nums[qae[-1]]:
                 qae.pop()
             qde.append(r)
             qae.append(r)
-            while qde and qae and nums[qde[0]]-nums[qae[0]]>limit:
-                if qde[0]==l:
+            while qde and qae and nums[qde[0]] - nums[qae[0]] > limit:
+                if qde[0] == l:
                     qde.popleft()
-                if qae[0]==l:
+                if qae[0] == l:
                     qae.popleft()
-                l+=1
-            ans=max(ans,r-l+1)
-            r+=1
+                l += 1
+            ans = max(ans, r - l + 1)
+            r += 1
         return ans
 
 
