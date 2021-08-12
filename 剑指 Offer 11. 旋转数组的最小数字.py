@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
+# !/usr/bin/env python
 from typing import List
 
 
@@ -27,8 +27,8 @@ from typing import List
 # 为什么选左边中位数：当只剩下两个数的时候，我如果取右中位数就是自己和自己比较了，而不是两个数比较。
 class Solution:
     def minArray(self, numbers: List[int]) -> int:
-        l, r = 0, len(numbers)-1
-        while l < r:
+        l, r = 0, len(numbers) - 1
+        while l < r:  # 小于和小于等于都可以
             mid = (l + r) // 2
             if numbers[mid] < numbers[r]:
                 r = mid

@@ -24,9 +24,15 @@
 #  Related Topics 位运算
 #  👍 29 👎 0
 
-
 class Solution:
     def convertInteger(self, A: int, B: int) -> int:
+        def cal(num):
+            x = 0xffffffff
+            if num < 0:
+                return x ^ (~num)
+            return num
+        A=cal(A)
+        B=cal(B)
         num = A ^ B
         cnt = 0
         while num:
