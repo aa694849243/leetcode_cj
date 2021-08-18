@@ -35,7 +35,7 @@ from typing import List
 #  Related Topics 深度优先搜索 广度优先搜索 并查集 数组 矩阵
 #  👍 4 👎 0
 
-
+#并查集 带数量
 class Solution:
     def largestArea(self, grid: List[str]) -> int:
         f = {}
