@@ -23,7 +23,7 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 select p2.id from Weather p1,Weather p2 where datediff(p2.RecordDate,p1.RecordDate)=1 and p2.Temperature>p1.Temperature
-#官方
+-- #官方
 SELECT
     weather.id AS 'Id'
 FROM
