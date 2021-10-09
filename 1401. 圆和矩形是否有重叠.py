@@ -53,6 +53,7 @@
 #  👍 25 👎 0
 
 # 1九宫格模拟
+# 测试
 class Solution:
     def checkOverlap(self, radius: int, x_center: int, y_center: int, x1: int, y1: int, x2: int, y2: int) -> bool:
         def check(x, y):
@@ -97,4 +98,4 @@ class Solution:
         return abs(complex(x, y)) <= radius
 
 
-Solution().checkOverlap(1,0, 0, 2 ,-10, 3, 10)
+Solution().checkOverlap(1, 0, 0, 2, -10, 3, 10)
