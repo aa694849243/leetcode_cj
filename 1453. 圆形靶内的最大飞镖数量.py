@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from typing import List
-
+from typing import List, Tuple
 
 # 墙壁上挂着一个圆形的飞镖靶。现在请你蒙着眼睛向靶上投掷飞镖。
 #
@@ -53,14 +52,43 @@ from typing import List
 #  Related Topics 几何 数组 数学
 #  👍 22 👎 0
 
+import itertools
+import math
 
+
+# 1 穷举法
 class Solution:
     def numPoints(self, points: List[List[int]], r: int) -> int:
-        ma = float('inf')
-        for i, (x1, y1) in enumerate(points):
-            for j in range(i):
-                x2, y2 = points[j]
-                d = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
-                if d > 2 * r:
-                    break
-                
+        def helper(a: complex, b: complex, r: int) -> Tuple[complex, complex]:
+            ab = b - a
+            mid = (a + b) / 2
+            dist_c_mid = math.sqrt(r ** 2 - (abs(ab) / 2) ** 2)
+            c_mid, mid_c = complex(-ab.imag, ab.real), complex(ab.imag, -ab.real)
+            c_mid, mid_c = c_mid / abs(c_mid) * dist_c_mid, mid_c / abs(mid_c) * dist_c_mid
+            return mid + c_mid, mid + mid_c
+
+        points = [complex(*lst) for lst in points]
+        res = 0
+        eps = 1e-8
+        for a, b in itertools.combinations(points, 2):
+            if abs(b - a) > 2 * r:
+                continue
+            c1, c2 = helper(a, b, r)
+            cnt_c1, cnt_c2 = 0, 0
+            for point in points:
+                if abs(abs(point - c1)) - r < eps:
+                    cnt_c1 += 1
+                if abs(abs(point - c2)) - r < eps:
+                    cnt_c2 += 1
+            res = max(res, cnt_c1, cnt_c2)
+        return max(res, +(len(points) > 0))
+
+
+# 2 angular sweep
+class Solution:
+    def numPoints(self, points: List[List[int]], r: int) -> int:
+
+        
+
+
+Solution().numPoints(points=[[-2, 0], [2, 0], [0, 2], [0, -2]], r=2)
