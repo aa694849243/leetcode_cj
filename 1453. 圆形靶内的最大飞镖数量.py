@@ -54,6 +54,7 @@ from typing import List, Tuple
 
 import itertools
 import math
+import collections
 
 
 # 1 穷举法
@@ -85,10 +86,42 @@ class Solution:
 
 
 # 2 angular sweep
+# 小于180度的扇形区域为入点区域
+# 入点一定要排在出点前面
 class Solution:
     def numPoints(self, points: List[List[int]], r: int) -> int:
+        def helper(index: int) -> int:
+            lst = []
+            cnt = 1
+            for v in m[index]:
+                if abs(v) > 2 * r:
+                    continue
+                if abs(v) == 0:
+                    cnt += 1
+                    continue
+                alpha = math.atan2(v.imag, v.real)
+                theta = math.acos(abs(v) / (2 * r))
+                angle_in = alpha - theta
+                angle_out = alpha + theta
+                # angle_in, angle_out = sorted([angle_in, angle_out])
+                lst.extend([[angle_in, 1], [angle_out, -1]])
+            lst.sort(key=lambda x: [x[0], -x[1]])
+            res = cnt
+            for angle, inc in lst:
+                cnt += inc
+                res = max(cnt, res)
+            return res
 
-        
+        points = [complex(*lst) for lst in points]
+        m = collections.defaultdict(list)
+        for i, vi in enumerate(points):
+            for j, vj in enumerate(points):
+                if i != j:
+                    m[i].append(vj - vi)
+        res = 1 if len(points) > 0 else 0
+        for point in m:
+            res = max(res, helper(point))
+        return res
 
 
-Solution().numPoints(points=[[-2, 0], [2, 0], [0, 2], [0, -2]], r=2)
+Solution().numPoints([[2,-3],[-1,-4],[-4,-5]], 3)
