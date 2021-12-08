@@ -40,13 +40,12 @@ class Solution:
     def lengthOfLIS(self, nums: List[int]) -> int:
         a = []
         for i in range(len(nums)):
-            if not a or nums[i]>a[-1]:
+            if not a or nums[i] > a[-1]:
                 a.append(nums[i])
             else:
-                j=bisect.bisect_left(a,nums[i])
-                a[j]=nums[i]
+                j = bisect.bisect_left(a, nums[i])
+                a[j] = nums[i]
         return len(a)
-
 
 
 Solution().lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18])

@@ -70,7 +70,7 @@ import collections
 
 from typing import List
 
-
+# 集合合并
 class Solution:
     def checkIfPrerequisite(self, numCourses: int, prerequisites: List[List[int]], queries: List[List[int]]) -> List[
         bool]:

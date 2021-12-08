@@ -69,7 +69,7 @@ def longestPalindrome(s: str) -> str:
 # -------------动态规划_填表法--------------------------------------------------------
 def longestPalindrome(s: str) -> str:
     n = len(s)
-    ans=''
+    ans = ''
     dp = [[False] * n for _ in range(n)]  # 做一张动态转移表dp
     for l in range(n):  # l+1为i-j的长度
         for i in range(n):  # 从i出发找回文
@@ -79,13 +79,14 @@ def longestPalindrome(s: str) -> str:
             if l == 0:  # 起始状态1：l+1==1，即单个字符一定为回文序列
                 dp[i][j] = True
             elif l == 1:  # 起始状态2：长度为2时，比对i和i+1出
-                dp[i][j] = (s[i]==s[j])
+                dp[i][j] = (s[i] == s[j])
             else:
-                dp[i][j]=(dp[i+1][j-1] and s[i]==s[j]) #每次只要找到前一步定位的状态就可以确定此步的状态
-                #状态转移方程
-            if dp[i][j] and l+1>len(ans): #长度大于上一步保存的len(ans)则更新ans
-                ans=s[i:j+1] #每次dp[i][j]为True,此时的长度都为l+1
+                dp[i][j] = (dp[i + 1][j - 1] and s[i] == s[j])  # 每次只要找到前一步定位的状态就可以确定此步的状态
+                # 状态转移方程
+            if dp[i][j] and l + 1 > len(ans):  # 长度大于上一步保存的len(ans)则更新ans
+                ans = s[i:j + 1]  # 每次dp[i][j]为True,此时的长度都为l+1
     return ans
+
 
 n = len('abchdll')
 dp = [[False] * n for _ in range(n)]
