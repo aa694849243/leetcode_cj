@@ -86,7 +86,7 @@ class Solution:
                 if m[cur] > ans:
                     ans = m[cur]
         return ans
-
+import itertools
 
 # rabin-karp,滚动哈希 未考虑哈希冲突
 class Solution:
@@ -115,8 +115,10 @@ class Solution:
             if c[s[i]] == 1:
                 dif += 1
             hash = ((hash - ord(s[i - minSize]) * mult) * base + ord(s[i])) % mod
-            if dif<=maxLetters:
+            if dif <= maxLetters:
                 m[hash] += 1
-                ans=max(m[hash],ans)
+                ans = max(m[hash], ans)
         return ans
-Solution().maxFreq("aababcaab",2,3,4)
+
+
+Solution().maxFreq("aababcaab", 2, 3, 4)
