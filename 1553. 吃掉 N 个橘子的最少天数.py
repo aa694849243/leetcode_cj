@@ -1,11 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import heapq
-from typing import List
-import collections
 import functools
-import itertools
-import sortedcontainers
-import bisect
 
 
 # 厨房里总共有 n 个橘子，你决定每一天选择如下方式之一吃这些橘子：
@@ -64,16 +59,31 @@ import bisect
 #
 #  1 <= n <= 2*10^9
 #
-#  Related Topics 记忆化搜索 动态规划 👍 104 👎 0
+#  Related Topics 记忆化搜索 动态规划
+#  👍 104 👎 0
 
 
 class Solution:
     def minDays(self, n: int) -> int:
         @functools.lru_cache(None)
         def rec(num):
-            if num==0:
-                return 0
             if num == 1:
                 return 1
-            return min(1 + num % 2 + rec(num // 2), 1 + num % 3 + rec(num // 3))
+            if num == 2:
+                return 2
+            if num == 3:
+                return 3
+            res = float('inf')
+            for i in range(4):
+                num -= i
+                if num % 3 == 0 and num % 2 == 0:
+                    res = min(res, rec(num // 3) + i + 1, rec(num // 2) + i + 1)
+                elif num % 3 == 0:
+                    res = min(res, rec(num // 3) + i + 1)
+                elif num % 2 == 0:
+                    res = min(res, rec(num // 2) + i + 1)
+                if i != 0:
+                    res = min(res, rec(num) + i)
+            return res
         return rec(n)
+Solution().minDays(8)

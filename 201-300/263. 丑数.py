@@ -41,5 +41,6 @@ class Solution:
                 if num%i==0:
                     return rec(num/i)
             return False
-        return rec(num)
+        res=rec(num)
+        return res
 Solution().isUgly(6)

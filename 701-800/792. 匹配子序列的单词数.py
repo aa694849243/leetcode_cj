@@ -42,7 +42,7 @@ class Solution:
         return cnt
 
 
-# 2查找下一个字母
+# 2查找下一个字母 查找最近的下一个字母
 class Solution:
     def numMatchingSubseq(self, s: str, words: List[str]) -> int:
         n = len(s)

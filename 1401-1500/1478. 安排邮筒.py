@@ -1,10 +1,8 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from typing import List
-import collections
-import functools
-import itertools
-import sortedcontainers
-import bisect
+
+
 # 给你一个房屋数组houses 和一个整数 k ，其中 houses[i] 是第 i 栋房子在一条街上的位置，现需要在这条街上安排 k 个邮筒。
 #
 #  请你返回每栋房子与离它最近的邮筒之间的距离的 最小 总和。
@@ -56,25 +54,16 @@ import bisect
 #  1 <= k <= n
 #  数组 houses 中的整数互不相同。
 #
-#  Related Topics 数组 数学 动态规划 排序 👍 72 👎 0
+#  Related Topics 数组 数学 动态规划 排序
+#  👍 72 👎 0
 
-from typing import List
+
 class Solution:
     def minDistance(self, houses: List[int], k: int) -> int:
         n = len(houses)
-        houses.sort()
-        cost = [[0] * n for _ in range(n)]
-        for i in range(n - 1, -1, -1):
-            for j in range(i, n):
-                if i == j:
-                    cost[i][j] = 0
+        costs = [[float('inf')] * n for _ in range(n)]
+        for l in range(n):
+            for r in range(n):
+                if l == r:
+                    costs[l][r] = 0
                 else:
-                    cost[i][j] = cost[i + 1][j - 1] + houses[j] - houses[i]
-        dp = [[float('inf')] * (k + 1) for _ in range(n)]  # dp[i][j]代表到i位置插j个邮筒，j从1开始
-        for i in range(n):
-            dp[i][1]=cost[0][i]
-            for j in range(2, min(k, i + 1) + 1):  # j最多为k个或i+1(i从0开始）
-                for i0 in range(i):
-                    if dp[i0][j - 1] != float('inf'):
-                        dp[i][j] = min(dp[i0][j - 1] + cost[i0 + 1][i], dp[i][j])
-        return dp[-1][-1]
