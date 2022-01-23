@@ -23,6 +23,7 @@ from typing import List
 
 #此方法为改良版的哨兵+单调栈，改良方法参考网站，特别注意关于右边界的问题
 # https://leetcode-cn.com/problems/longest-common-prefix/solution/zui-chang-gong-gong-qian-zhui-by-leetcode-solution/
+# 延迟单调栈
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
         if not heights:

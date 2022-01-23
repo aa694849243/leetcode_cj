@@ -37,11 +37,12 @@
 链接：https://leetcode-cn.com/problems/sliding-window-maximum
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 '''
-from typing import List
 from collections import deque
+from typing import List
 
 
 # 双端队列 滑动窗口
+# 递减队列，队首保留坐标
 class Solution:
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
         if not nums or not k:
@@ -136,7 +137,7 @@ class Solution:
 
 
 # 作者：LeetCode
-#链接：https://leetcode-cn.com/problems/sliding-window-maximum/solution/hua-dong-chuang-kou-zui-da-zhi-by-leetcode-3/
+# 链接：https://leetcode-cn.com/problems/sliding-window-maximum/solution/hua-dong-chuang-kou-zui-da-zhi-by-leetcode-3/
 # 来源：力扣（LeetCode）
 # 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 

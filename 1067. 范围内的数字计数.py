@@ -1,12 +1,5 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from typing import List
-import collections
-import functools
-import itertools
-import sortedcontainers
-import bisect
-
-
 # 给定一个在 0 到 9 之间的整数 d，和两个正整数 low 和 high 分别作为上下界。返回 d 在 low 和 high 之间的整数中出现的次数，包括
 # 边界 low 和 high。
 #
@@ -36,24 +29,67 @@ import bisect
 #  0 <= d <= 9
 #  1 <= low <= high <= 2×10^8
 #
-#  Related Topics 数学 动态规划 👍 20 👎 0
+#  Related Topics 数学 动态规划
+#  👍 20 👎 0
 
-# 数位dp
-# https://leetcode-cn.com/problems/digit-count-in-range/solution/python3dai-ma-zhu-wei-tong-ji-by-trojanmaster/
+# 标准数位dp
 class Solution:
     def digitsCount(self, d: int, low: int, high: int) -> int:
         edge = str(low).count(str(d))
         if low == high:
             return edge
-        return self.cal(high, str(d)) - self.cal(low, str(d)) + edge
+        return edge + self.cal(high, d) - self.cal(low, d)
 
-    def cal(self, limit, d):
-        w = str(limit)
+    def cal(self, num, d) -> int:
         res = 0
-        for i in range(len(w) - 1, -1, -1):
-            if w[i] == d:
-                part1 = int(w[:i]) * 10 ** (len(w) - i - 1) if i != 0 else 0  # i左边的数
-                part2 = int(w[i + 1:]) + 1 if i != len(w) - 1 else 1  # i右边的数
+        num = str(num)
+        for i in range(len(num) - 1, -1, -1):
+            if int(num[i]) == d:
+                part1 = int(num[:i]) * 10 ** (len(num) - i - 1) if i != 0 else 0
+                part2 = 1 + int(num[i + 1:]) if i != len(num) - 1 else 1
                 res += part1 + part2
-            elif int(w[i]) > int(d):
-                part1 = (int(w[:i])+1)*10**(len(w)-i-1) if i!=0 else 1
+            elif int(num[i]) > d:
+                part1 = (1 + int(num[:i])) * 10 ** (len(num) - i - 1) if i != 0 else 10 ** (len(num) - i - 1)
+                res += part1
+            else:
+                part1 = int(num[:i]) * 10 ** (len(num) - i - 1) if i != 0 else 0
+                res += part1
+        if d == 0:
+            for i in range(1, len(num)):
+                res -= 10 ** i
+        return res
+
+
+from collections import Counter
+
+
+# class Solution:
+#     def digitsCount(self, d, low, high):
+#         edge = Counter(str(low))[str(d)]
+#         if low == high:
+#             return edge
+#         ans = edge + self.count(high, d) - self.count(low, d)
+#         return ans
+#
+#     def count(self, limit, d):
+#         num_str = str(limit)
+#         res = 0
+#         for i in range(len(num_str) - 1, -1, -1):
+#             if d == int(num_str[i]):
+#                 part1 = int(num_str[:i]) * pow(10, len(num_str) - (i + 1)) if i != 0 else 0
+#                 part2 = 1 * (1 + int(num_str[i + 1:])) if i != len(num_str) - 1 else 1
+#                 res = res + part1 + part2
+#             elif d < int(num_str[i]):
+#                 prev = 1 + int(num_str[:i]) if i != 0 else 1
+#                 part1 = prev * pow(10, len(num_str) - (i + 1))
+#                 res = res + part1
+#             else:
+#                 part1 = int(num_str[:i]) * pow(10, len(num_str) - (i + 1)) if i != 0 else 0
+#                 res = res + part1
+#         if d == 0:
+#             for i in range(1, len(num_str)):
+#                 res = res - pow(10, i)
+#         return res
+
+
+Solution().digitsCount(0, 1080, 2160)
