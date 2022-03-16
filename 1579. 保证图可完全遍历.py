@@ -112,3 +112,4 @@ class Solution:
                     ans += 1
                 else:
                     ufb.union(u, v)
+        return ans if ufa.part==1 and ufb.part==1 else -1
