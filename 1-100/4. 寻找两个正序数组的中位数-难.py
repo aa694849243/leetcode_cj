@@ -63,8 +63,6 @@ def findMedianSortedArrays(nums1: list, nums2: list) -> float:
     # 只剩m数组的情况
     mid = (mid1 + mid2) / 2  # 上一步已经全部弹出，则将保留的mid1和mid2使用
     return mid
-
-
 # ---------------------------------------二分法-------------------------------------------------------------
 def findMedianSortedArrays(nums1: list, nums2: list) -> float:
     if len(nums1) > len(nums2):

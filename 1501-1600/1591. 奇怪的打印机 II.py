@@ -93,4 +93,36 @@ class Solution:
             for color in d:
                 unfilled[color] -= colors[color]
         return True
-Solution().isPrintable([[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]])
+
+
+class Solution:
+    def isPrintable(self, targetGrid: List[List[int]]) -> bool:
+        R, C = len(targetGrid), len(targetGrid[0])
+        colors = collections.defaultdict(set)
+        for r in range(R):
+            for c in range(C):
+                colors[targetGrid[r][c]].add((r, c))
+        rects = collections.defaultdict(list)
+        for color in colors:
+            rects[color] = [min(r for r, c in colors[color]), max(r for r, c in colors[color]), min(c for r, c in colors[color]), max(c for r, c in colors[color])]
+        unfilled = collections.defaultdict(set)
+        for color in colors:
+            mir, mar, mic, mac = rects[color]
+            unfilled[color]
+            for r in range(mir, mar + 1):
+                for c in range(mic, mac + 1):
+                    if targetGrid[r][c] != color:
+                        unfilled[color].add((r, c))
+        while unfilled:
+            for color in unfilled:
+                if not unfilled[color]:  # 只有完整矩形才能上色
+                    break
+            else:  # unfilled没有清空，但是没有可以上色的完整矩形
+                return False
+            unfilled.pop(color)
+            for other in unfilled:
+                unfilled[other] -= colors[color]
+        return True
+
+Solution().isPrintable([[1, 1, 1, 1], [1, 2, 2, 1], [1, 2, 2, 1], [1, 1, 1, 1]])
+#线段树
