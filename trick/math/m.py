@@ -4,3 +4,4 @@ def gcd(x, y):
         return x
     else:
         return gcd(y, x % y)
+print(gcd(4,5))

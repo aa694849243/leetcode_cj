@@ -110,7 +110,7 @@ class Solution:
         return -1
 
 
-# 标准线段树
+# 标准线段树,点更新
 class segtree:
     def __init__(self, l, r):
         self.l = l

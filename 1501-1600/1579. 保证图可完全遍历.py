@@ -61,6 +61,7 @@ from typing import List
 #
 #  Related Topics 并查集 图
 #  👍 126 👎 0
+# 标准并查集 类
 class unionfind:
     def __init__(self, n):
         self.part = n
@@ -112,4 +113,4 @@ class Solution:
                     ans += 1
                 else:
                     ufb.union(u, v)
-        return ans if ufa.part==1 and ufb.part==1 else -1
+        return ans if ufa.part == 1 and ufb.part == 1 else -1
