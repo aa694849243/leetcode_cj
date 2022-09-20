@@ -48,13 +48,13 @@ class Solution:
             while i + p[i] < lens and i - p[i] >= 0 and s[i + p[i]] == s[i - p[i]]:
                 p[i] += 1
             if i + p[i] > mx:
-                id, mx = i, i + p[i],
+                id, mx = i, i + p[i]
         i_res = p.index(max(p))
         s_res = s[i_res - (p[i_res] - 1):i_res + p[i_res]]
         return s_res.replace('#', ''), max(p) - 1
 
 
-Solution().longestPalindromeSubseq('babad')
+Solution().longestPalindromeSubseq("ggbswiymmlevedhkbdhntnhdbkhdevelmmyiwsbgg")
 
 # 1解题
 import collections

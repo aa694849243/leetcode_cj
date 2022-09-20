@@ -62,7 +62,7 @@ class Solution:
                 m[cover2, nei] = d_
 
 
-# 2bellman-ford 松弛 动态规划
+# 2bellman-ford 松弛 动态规划 判断有无负权回路 spfa为优化版
 class Solution:
     def shortestPathLength(self, graph: List[List[int]]) -> int:
         if not graph or not graph[0]:

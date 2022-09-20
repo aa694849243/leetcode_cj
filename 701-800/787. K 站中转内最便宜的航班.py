@@ -63,7 +63,7 @@ class Solution:
         return -1
 
 
-# 2bellman-ford 最短路径
+# 2bellman-ford 最短路径 spfa为优化版
 class Solution:
     def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
         distance = [[float('inf')] * (K + 2) for _ in range(n)]  # distance行表示点，列表示松弛次数，值代表最短距离
