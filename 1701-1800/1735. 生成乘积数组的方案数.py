@@ -76,8 +76,8 @@ class Solution:
         def get_factors(num):
             C = collections.Counter()
             for p in prims:
-                if num % p == 1:
-                    continue
+                # if num % p == 1:
+                #     continue
                 while num % p == 0:
                     num //= p
                     C[p] += 1
