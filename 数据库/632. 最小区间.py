@@ -42,5 +42,5 @@ nums[i] 按非递减顺序排列
 链接：https://leetcode-cn.com/problems/smallest-range-covering-elements-from-k-lists
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
 from typing import List
-class Solution:
-    def smallestRange(self, nums: List[List[int]]) -> List[int]:
+# class Solution:
+#     def smallestRange(self, nums: List[List[int]]) -> List[int]:
