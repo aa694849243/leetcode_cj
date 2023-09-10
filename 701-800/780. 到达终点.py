@@ -45,5 +45,20 @@ class Solution:
                     return (ty - sy) % tx == 0
         return sx == tx and sy == ty
 
+class Solution:
+    def reachingPoints(self, sx: int, sy: int, tx: int, ty: int) -> bool:
+        while sx < tx != ty > sy: # tx>sx,ty>sy 意味着 tx,ty均要缩减到sx,sy的大小，那么%操作就是合理的
+            if tx > ty:
+                tx %= ty
+            else:
+                ty %= tx
+        if tx == sx and ty == sy:
+            return True
+        elif tx == sx:
+            return ty > sy and (ty - sy) % tx == 0
+        elif ty == sy:
+            return tx > sx and (tx - sx) % ty == 0
+        else:
+            return False
 
-Solution().reachingPoints(3, 3, 9, 12)
+print(Solution().reachingPoints(5, 5, 100, 10))

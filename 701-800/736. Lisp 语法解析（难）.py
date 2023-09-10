@@ -105,7 +105,9 @@ class Solution(object):
         if buf:
             yield " ".join(buf)
 
-
+print(Solution().evaluate(
+    "(let x 2 (mult x (let x 3 y 4 (add x y))))"
+))
 # 1仿写 字符串递归
 # mult和add必跟两个字段，形如(mult a b) (add a b)；let跟奇数个字段，形如(let a 1 a+1) (let a 1 b 2 expression)
 def implicit_scope(func):

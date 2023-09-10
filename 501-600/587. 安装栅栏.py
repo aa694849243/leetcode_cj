@@ -108,29 +108,26 @@ class Solution:
 class Solution:
     def outerTrees(self, points: List[List[int]]) -> List[List[int]]:
         def oriented(p, q, r):
-            return (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
-
+            return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (
+                    r[0] - p[0])  # 叉积方向为正数，逆时针
         if len(points) < 4:
             return points
-
-        points.sort()  # 按照x值正序排列
+        points.sort()
         hull = [points[0], points[1]]
+        m = set()
         for i in range(2, len(points)):
             r = points[i]
-            while len(hull) >= 2 and oriented(hull[-2], r, hull[-1]) < 0:
+            while len(hull) > 1 and oriented(hull[-2], hull[-1], r) < 0:
                 hull.pop()
             hull.append(r)
-        m = set()
-        for p in hull:  # 将已经添加的树储存到集合中
-            m.add(tuple(p))
-        points = points[::-1]  # 按照x值逆序排列
-        for i in range(1, len(points)):
-            r = points[i]
-            while len(hull) >= 2 and oriented(hull[-2], r, hull[-1]) < 0:
+        for point in hull:
+            m.add(tuple(point))
+        points = points[::-1]
+        for r in points[1:]:
+            while len(hull)>1 and oriented(hull[-2], hull[-1], r) < 0:
                 hull.pop()
             if tuple(r) not in m:
                 hull.append(r)
-                m.add(tuple(r))
         return hull
 
 
@@ -144,4 +141,4 @@ def cal(a, b):
     return True
 
 
-Solution().outerTrees([[0, 0], [1, 0], [2, 0], [3, 0], [3, 1], [3, 2], [3, 3], [1, 1], [2, 2], [1, 2], [0, 2], [0, 1]])
+Solution().outerTrees([[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]])

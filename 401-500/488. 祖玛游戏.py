@@ -42,34 +42,39 @@
 
 # 1深度优先搜索 dfs
 # https://leetcode-cn.com/problems/zuma-game/solution/bao-li-ye-yao-you-ya-by-carudy/
-class Solution:
+class Solution:  # 剪枝条件，dfs
     def findMinStep(self, board: str, hand: str) -> int:
-        def simplified(s):
-            if len(s) < 3:
-                return s
-            for i in range(len(s)):
-                j = i
-                while j < len(s) and s[i] == s[j]: j += 1
-                if j - i >= 3: return simplified(s[:i] + s[j:])
+        def clean(s):
+            # 消除桌面上需要消除的球
+            n = 1
+            while n:
+                s, n = re.subn(r"(.)\1{2,}", "", s)
             return s
 
-        import collections
         m = collections.defaultdict(lambda: 6)
-        c = collections.Counter(hand)
-        m[board]=0
+        cnts = collections.Counter(hand)
+        cs = set(cnts)
+        board = clean(board)
+        m[board] = 0
+
         def dfs(s):
             if not s:
-                return ''
+                return
             for i in range(len(s) + 1):
-                for ch in 'RYBGW':
-                    if c[ch] > 0:
-                        c[ch] -= 1
-                        new = simplified(s[:i] + ch + s[i:])
-                        if m[new] > m[s] + 1:
-                            m[new] = m[s] + 1
-                            if m[new] < 5:
-                                dfs(new)
-                        c[ch] += 1
+                for c in cs:  # 剪枝1：相同的球只插一次
+                    if cnts[c] > 0:
+                        if i > 0 and s[i - 1] == c:  # 剪枝2：插入位点左边相同颜色的球跳过，因为，将插入位点左偏一格结果是相同的
+                            continue
+                        if i > 0 and i < len(s) and s[i - 1] != s[i] != c:  # 剪枝3： 插入位点与左右两侧的球颜色都不同，这是没有意义的，因为既不能消除，也不能隔断，这样先插入颜色与两侧任意侧相同颜色球的结果不会改变
+                            continue
+                        cnts[c] -= 1
+                        tmp = clean(s[:i] + c + s[i:])
+                        if m[tmp] > m[s] + 1:
+                            m[tmp] = m[s] + 1
+                            if m[tmp] + 1 < m['']:
+                                dfs(tmp)
+                        cnts[c] += 1
+
         dfs(board)
-        return m[''] if m['']<6 else -1
+        return m[''] if m[''] < 6 else -1
 Solution().findMinStep("WWRRBBWW", "WRBRW")

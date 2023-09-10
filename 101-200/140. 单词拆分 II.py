@@ -39,6 +39,7 @@ wordDict = ["cats", "dog", "sand", "and", "cat"]
 链接：https://leetcode-cn.com/problems/word-break-ii
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 '''
+import functools
 from typing import List
 
 
@@ -85,11 +86,10 @@ from collections import defaultdict
 #回溯法 特殊回溯 精妙回溯 dfs 特殊dfs 精妙dfs
 class Solution:
     def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
-        mem = {}
+        wordDict=set(wordDict)
 
+        @functools.lru_cache(None)
         def dfs(s):
-            if s in mem:
-                return mem[s]
             if not s:
                 return []
             res = []
@@ -101,7 +101,6 @@ class Solution:
                         rest=dfs(s[i:])
                         for j in rest:
                             res.append(s[:i] + ' ' + j)
-            mem[s] = res
             return res
         return dfs(s)
 

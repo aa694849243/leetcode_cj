@@ -1,18 +1,134 @@
-'''请你实现一个数据结构支持以下操作：
+# 请你设计一个用于存储字符串计数的数据结构，并能够返回计数最小和最大的字符串。
+#
+#  实现 AllOne 类：
+#
+#
+#  AllOne() 初始化数据结构的对象。
+#  inc(String key) 字符串 key 的计数增加 1 。如果数据结构中尚不存在 key ，那么插入计数为 1 的 key 。
+#  dec(String key) 字符串 key 的计数减少 1 。如果 key 的计数在减少后为 0 ，那么需要将这个 key 从数据结构中删除。测试用例
+# 保证：在减少计数前，key 存在于数据结构中。
+#  getMaxKey() 返回任意一个计数最大的字符串。如果没有元素存在，返回一个空字符串 "" 。
+#  getMinKey() 返回任意一个计数最小的字符串。如果没有元素存在，返回一个空字符串 "" 。
+#
+#
+#  注意：每个函数都应当满足 O(1) 平均时间复杂度。
+#
+#
+#
+#  示例：
+#
+#
+# 输入
+# ["AllOne", "inc", "inc", "getMaxKey", "getMinKey", "inc", "getMaxKey",
+# "getMinKey"]
+# [[], ["hello"], ["hello"], [], [], ["leet"], [], []]
+# 输出
+# [null, null, null, "hello", "hello", null, "hello", "leet"]
+#
+# 解释
+# AllOne allOne = new AllOne();
+# allOne.inc("hello");
+# allOne.inc("hello");
+# allOne.getMaxKey(); // 返回 "hello"
+# allOne.getMinKey(); // 返回 "hello"
+# allOne.inc("leet");
+# allOne.getMaxKey(); // 返回 "hello"
+# allOne.getMinKey(); // 返回 "leet"
+#
+#
+#
+#
+#  提示：
+#
+#
+#  1 <= key.length <= 10
+#  key 由小写英文字母组成
+#  测试用例保证：在每次调用 dec 时，数据结构中总存在 key
+#  最多调用 inc、dec、getMaxKey 和 getMinKey 方法 5 * 10⁴ 次
+#
+#
+#  Related Topics 设计 哈希表 链表 双向链表
+#  👍 308 👎 0
 
-Inc(key) - 插入一个新的值为 1 的 key。或者使一个存在的 key 增加一，保证 key 不为空字符串。
-Dec(key) - 如果这个 key 的值是 1，那么把他从数据结构中移除掉。否则使一个存在的 key 值减一。如果这个 key 不存在，这个函数不做任何事情。key 保证不为空字符串。
-GetMaxKey() - 返回 key 中值最大的任意一个。如果没有元素存在，返回一个空字符串"" 。
-GetMinKey() - 返回 key 中值最小的任意一个。如果没有元素存在，返回一个空字符串""。
- 
 
-挑战：
+# leetcode submit region begin(Prohibit modification and deletion)
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.prev = None
+        self.next = None
+        self.keys = set()
 
-你能够以 O(1) 的时间复杂度实现所有操作吗？
 
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/all-oone-data-structure
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
+class AllOne:
+
+    def __init__(self):
+        self.head, self.tail = Node(-1), Node(-1)
+        self.head.next, self.tail.prev = self.tail, self.head
+        self.key2cnt = {}
+        self.cnt2node = {}
+
+    def inc(self, key: str) -> None:
+        if key not in self.key2cnt:
+            if 1 not in self.cnt2node:
+                self.cnt2node[1] = Node(1)
+                self.cnt2node[1].keys.add(key)
+                self.key2cnt[key] = 1
+                self.addAfter(self.head, self.cnt2node[1])
+            else:
+                self.cnt2node[1].keys.add(key)
+                self.key2cnt[key] = 1
+        else:
+            cnt = self.key2cnt[key]
+            self.key2cnt[key] += 1
+            self.cnt2node[cnt].keys.remove(key)
+            if cnt + 1 not in self.cnt2node:
+                self.cnt2node[cnt + 1] = Node(cnt + 1)
+                self.cnt2node[cnt + 1].keys.add(key)
+                self.addAfter(self.cnt2node[cnt], self.cnt2node[cnt + 1])
+            else:
+                self.cnt2node[cnt + 1].keys.add(key)
+            if not self.cnt2node[cnt].keys:
+                self.remove_node(self.cnt2node[cnt])
+                self.cnt2node.pop(cnt)
+
+    def dec(self, key: str) -> None:
+        cnt = self.key2cnt[key]
+        if cnt == 1:
+            self.key2cnt.pop(key)
+            self.cnt2node[1].keys.remove(key)
+            if not self.cnt2node[1].keys:
+                self.remove_node(self.cnt2node[1])
+                self.cnt2node.pop(1)
+        else:
+            self.key2cnt[key] -= 1
+            self.cnt2node[cnt].keys.remove(key)
+            if cnt - 1 not in self.cnt2node:
+                pre_node= self.cnt2node[cnt].prev
+                self.cnt2node[cnt - 1] = Node(cnt - 1)
+                self.cnt2node[cnt - 1].keys.add(key)
+                self.addAfter(pre_node, self.cnt2node[cnt-1])
+            else:
+                self.cnt2node[cnt - 1].keys.add(key)
+            if not self.cnt2node[cnt].keys:
+                self.remove_node(self.cnt2node[cnt])
+                self.cnt2node.pop(cnt)
+
+    def getMaxKey(self) -> str:
+        return next(iter(self.tail.prev.keys)) if self.tail.prev != self.head else ""
+
+    def getMinKey(self) -> str:
+        return next(iter(self.head.next.keys)) if self.head.next != self.tail else ""
+
+    def addAfter(self, node, newNode):
+        newNode.prev = node
+        newNode.next = node.next
+        node.next.prev = newNode
+        node.next = newNode
+
+    def remove_node(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
 
 # Your AllOne object will be instantiated and called as such:
 # obj = AllOne()
@@ -20,175 +136,4 @@ GetMinKey() - 返回 key 中值最小的任意一个。如果没有元素存在�
 # obj.dec(key)
 # param_3 = obj.getMaxKey()
 # param_4 = obj.getMinKey()
-
-
-# 1投机法-不符合O(1)要求  max用法
-import collections
-
-
-class AllOne:
-
-    def __init__(self):
-        """
-        Initialize your data structure here.
-        """
-        self.lookup = collections.defaultdict(int)
-
-    def inc(self, key: str) -> None:
-        """
-        Inserts a new key <Key> with value 1. Or increments an existing key by 1.
-        """
-        self.lookup[key] += 1
-
-    def dec(self, key: str) -> None:
-        """
-        Decrements an existing key by 1. If Key's value is 1, remove it from the data structure.
-        """
-        if key in self.lookup:
-            if self.lookup[key] == 1:
-                self.lookup.pop(key)
-            else:
-                self.lookup[key] -= 1
-
-    def getMaxKey(self) -> str:
-        """
-        Returns one of the keys with maximal value.
-        """
-        return max(self.lookup.items(), key=lambda x: x[1], default=[''])[0]
-
-    def getMinKey(self) -> str:
-        """
-        Returns one of the keys with Minimal value.
-        """
-        return min(self.lookup.items(), key=lambda x: x[1], default=[''])[0]
-
-
-# 2双向链表 O(1)复杂度求最大最小值
-import collections
-
-
-class Node:
-    def __init__(self, cnt):
-        self.cnt = cnt
-        self.keylist = set()
-        self.prev = None
-        self.next = None
-
-
-class AllOne:
-
-    def __init__(self):
-        """
-        Initialize your data structure here.
-        """
-        self.head = Node(float('-inf'))
-        self.tail = Node(float('inf'))
-        self.keymap = {}
-        self.nodenums = {}
-        self.head.next = self.tail
-        self.tail.prev = self.head
-
-    def inc(self, key: str) -> None:
-        """
-        Inserts a new key <Key> with value 1. Or increments an existing key by 1.
-        """
-        if key in self.keymap:
-            node = self.nodenums[self.keymap[key]]
-            if node.cnt + 1 in self.nodenums:
-                self.keyoffset(key, 1)
-            else:
-                self.keymap[key] += 1
-                self.insertnode(node, node.cnt + 1)
-                self.rmvnodekey(node, key)
-                newnode = node.next
-                self.nodenums[newnode.cnt] = newnode
-                newnode.keylist.add(key)
-        else:
-            if 1 not in self.nodenums:
-                self.insertnode(self.head, 1)
-                newnode = self.head.next
-                self.nodenums[1] = newnode
-                newnode.keylist.add(key)
-            else:
-                node = self.nodenums[1]
-                node.keylist.add(key)
-            self.keymap[key] = 1
-
-    def dec(self, key: str) -> None:
-        """
-        Decrements an existing key by 1. If Key's value is 1, remove it from the data structure.
-        """
-        if key in self.keymap:
-            node = self.nodenums[self.keymap[key]]
-            if node.cnt > 1:
-                if node.cnt - 1 in self.nodenums:
-                    self.keyoffset(key, -1)
-                else:
-                    self.keymap[key] -= 1
-                    self.insertnode(node.prev, node.cnt - 1)
-                    self.rmvnodekey(node, key)
-                    newnode = node.prev
-                    self.nodenums[newnode.cnt] = newnode
-                    newnode.keylist.add(key)
-
-            else:
-                self.rmvnodekey(node, key)
-                self.keymap.pop(key)
-
-    def getMaxKey(self) -> str:
-        """
-        Returns one of the keys with maximal value.
-        """
-        return '' if self.head.next == self.tail else next(iter(self.tail.prev.keylist))
-
-    def getMinKey(self) -> str:
-        """
-        Returns one of the keys with Minimal value.
-        """
-        return '' if self.head.next == self.tail else next(iter(self.head.next.keylist))
-
-    def keyoffset(self, key, offset):
-        nodenum = self.keymap[key]
-        node = self.nodenums[nodenum]
-        self.keymap[key] += offset
-        self.rmvnodekey(node, key)
-        newnode = self.nodenums[nodenum + offset]
-        newnode.keylist.add(key)
-
-    def insertnode(self, node, val):
-        newnode = Node(val)
-        a = node.next
-        node.next = newnode
-        newnode.next = a
-        newnode.prev = node
-        a.prev = newnode
-
-    def rmvnode(self, node):
-        pre = node.prev
-        ne = node.next
-        pre.next = ne
-        ne.prev = pre
-
-    def rmvnodekey(self, node, key):
-        node.keylist.discard(key)
-        if len(node.keylist) == 0:
-            self.nodenums.pop(node.cnt)
-            self.rmvnode(node)
-
-
-# a= ["AllOne","inc","inc","inc","inc","inc","inc","dec", "dec","getMinKey","dec","getMaxKey","getMinKey"]
-# b= [[],["a"],["b"],["b"],["c"],["c"],["c"],["b"],["b"],[],["a"],[],[]]
-obj = AllOne()
-obj.inc('a')
-obj.inc('b')
-obj.inc('b')
-obj.inc('c')
-obj.inc('c')
-obj.inc('c')
-obj.dec('b')
-obj.dec('b')
-obj.getMaxKey()
-obj.getMinKey()
-obj.dec('a')
-obj.getMaxKey()
-obj.getMinKey()
+# leetcode submit region end(Prohibit modification and deletion)

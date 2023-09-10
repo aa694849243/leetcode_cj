@@ -51,53 +51,48 @@ class Solution:
     def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
         if endWord not in wordList:
             return []
-        if beginWord not in wordList:
-            wordList = [beginWord] + wordList
-        map1, map2 = {}, {}
-        stop = len(wordList)
-        # 构造映射id
-        for i in range(stop):
-            map1[wordList[i]] = i
-            map2[i] = wordList[i]
-        # 做桶
-        buckets = defaultdict(list)
+        g = collections.defaultdict(set)
+        wordList.append(beginWord)
+        s = set(wordList)
+        cost = collections.defaultdict(lambda: math.inf)
         for word in wordList:
-            for i in range(len(beginWord)):
-                match = word[:i] + '_' + word[i + 1:]
-                buckets[match].append(map1[word])
-        # 做邻接表
-        buckets2 = defaultdict(list)
-        values = buckets.values()
-        for i in values:
-            for j in i:
-                buckets2[j].extend(i)
-                buckets2[j].remove(j)
-        cost = [float('inf')] * stop  # cost表示从beginword到i处数组的转换代价
+            for i, ch in enumerate(word):
+                for letter in 'abcdefghijklmnopqrstuvwxyz':
+                    if letter != ch:
+                        tmp = word[:i] + letter + word[i + 1:]
+                        if tmp in s:
+                            g[word].add(tmp)
+        q = collections.deque([beginWord])
+        cost[beginWord] = 0
         res = []
-        cost[map1[beginWord]] = 0
+        while q:
+            cur_word = q.popleft()
+            for nxt in g[cur_word]:
+                if cost[nxt] == math.inf:
+                    cost[nxt] = cost[cur_word] + 1
+                    q.append(nxt)
+            if cost[endWord] != math.inf:
+                break
+        if cost[endWord] == math.inf:
+            return []
+        m = collections.defaultdict(set)
+        for word in wordList:
+            m[cost[word]].add(word)
+        g2 = collections.defaultdict(set)
+        for word in wordList:
+            g2[word] = g[word] & m[cost[word] - 1]
+        path = [endWord]
 
-        def bfs(vi):
-            qu = deque()
-            qu.append([vi])
-            while qu:
-                a = qu.popleft()
-                for i in buckets2[a[-1]]:
-                    if cost[a[-1]] >= cost[map1[endWord]]:
-                        return
-                    if cost[i] >= cost[a[-1]] + 1:
-                        cost[i] = cost[a[-1]] + 1
-                        qu.append(a + [i])
-                        if i == map1[endWord]:
-                            res.append(a + [i])
+        def dfs(word):
+            if word == beginWord:
+                res.append(path[:][::-1])
+                return
+            for nxt in g2[word]:
+                path.append(nxt)
+                dfs(nxt)
+                path.pop()
 
-        bfs(map1[beginWord])
+        dfs(endWord)
+        return res
 
-        res2 = []
-        for m in res:
-            ans2 = []
-            for n in m:
-                ans2.append(map2[n])
-            res2.append(ans2)
-        return res2
 Solution().findLadders(beginWord, endWord, wordList)
-# 先做桶再做邻接表

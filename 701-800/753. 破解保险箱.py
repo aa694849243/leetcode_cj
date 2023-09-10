@@ -35,6 +35,7 @@ k^n 最大可能为 4096。
 
 # https://leetcode-cn.com/problems/cracking-the-safe/solution/po-jie-bao-xian-xiang-by-leetcode-solution/
 # 欧拉回路 一笔画
+# 入边和出边相等一定可以构成欧拉回路
 # 将n-1位设置为node,每到1个node递归一下，保证不漏掉任何回路
 class Solution:
     def crackSafe(self, n: int, k: int) -> str:

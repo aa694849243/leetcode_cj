@@ -65,6 +65,8 @@ class Solution:
             if cycle < 0:  # 只有冲突边
                 return [edges[conflict][0], edges[conflict][1]]
             else:  # 既有冲突边，又有成环边
+                # 先遍历环中冲突边，那么结果会有成环边也会有冲突边，这样删除环中冲突边即可。
+                # 先遍历环外冲突边，那么环中冲突边会直接返回，不会走到这一步
                 nonmarkconflict_0 = parent[edges[conflict][1]]
                 return [nonmarkconflict_0, edges[conflict][1]]
 

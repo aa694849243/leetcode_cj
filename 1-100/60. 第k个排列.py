@@ -30,25 +30,46 @@
 
 # 参考https://leetcode-cn.com/problems/permutation-sequence/solution/di-k-ge-pai-lie-by-leetcode/
 # 阶乘数系统
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def getPermutation(self, n: int, k: int) -> str:
-        f_permutation = [str(i + 1) for i in range(n)]  # 最低序列表
-        factorials = [0]
-        j = 1
-        for i in range(1, n):
-            j *= i
-            factorials.append(j)
         k -= 1
-        ans = ''
-        for l in range(n - 1, 0, -1):
-            idx = k // factorials[l]
-            ans += f_permutation.pop(idx)
-            k -= idx * factorials[l]
-        ans += f_permutation[0]
-        return ans
+        factorial = [1] * (n + 1)
+        for i in range(1, n + 1):
+            factorial[i] = factorial[i - 1] * i
+        valid = [1] * (n + 1)
+        ans = []
+        for i in range(1, n + 1):
+            order = k // factorial[n - i] + 1
+            for j in range(1, n + 1):
+                order -= valid[j]
+                if order == 0:
+                    valid[j] = 0
+                    ans.append(str(j))
+                    break
+            k %= factorial[n - i]
+        return ''.join(ans)
+class Solution:
+    def getPermutation(self, n: int, k: int) -> str:
+        fact = [1] * (n + 1)
+        for i in range(1, n + 1):
+            fact[i] = fact[i - 1] * i
+        visted = [0] * n
+        res = []
+        while k:
+            resi = (k - 1) // (fact[n - len(res) - 1]) + 1
+            k = k % fact[n - len(res) - 1]
+            for i in range(n):
+                if visted[i] == 0:
+                    resi -= 1
+                if resi == 0:
+                    res.append(str(i + 1))
+                    visted[i] = 1
+                    break
+            if k == 0:
+                for i in range(n-1,-1,-1):
+                    if visted[i] == 0:
+                        res.append(str(i + 1))
+        return ''.join(res)
 
-
-
-n = 4
-k = 9
-Solution().getPermutation(n, k)
+# leetcode submit region end(Prohibit modification and deletion)

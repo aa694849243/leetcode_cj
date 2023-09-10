@@ -1,79 +1,43 @@
-'''
-验证给定的字符串是否可以解释为十进制数字。
 
-例如:
-
-"0" => true
-" 0.1 " => true
-"abc" => false
-"1 a" => false
-"2e10" => true
-" -90e3   " => true
-" 1e" => false
-"e3" => false
-" 6e-1" => true
-" 99e2.5 " => false
-"53.5e93" => true
-" --6 " => false
-"-+3" => false
-"95a54e53" => false
-
-说明: 我们有意将问题陈述地比较模糊。在实现代码之前，你应当事先思考所有可能的情况。这里给出一份可能存在于有效十进制数字中的字符列表：
-
-数字 0-9
-指数 - "e"
-正/负号 - "+"/"-"
-小数点 - "."
-当然，在输入中，这些字符的上下文也很重要。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/valid-number
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
-'''
-
-
+# 有限状态自动机
 class Solution:
     def isNumber(self, s: str) -> bool:
-        state = [
-            {},
-            # 状态1,初始状态(扫描通过的空格)
-            {"blank": 1, "sign": 2, "digit": 3, ".": 4},
-            # 状态2,发现符号位(后面跟数字或者小数点)
-            {"digit": 3, ".": 4},
-            # 状态3,数字(一直循环到非数字)
-            {"digit": 3, ".": 5, "e": 6, "blank": 9},
-            # 状态4,小数点(后面只有紧接数字)
-            {"digit": 5},
-            # 状态5,小数点之后(后面只能为数字,e,或者以空格结束)
-            {"digit": 5, "e": 6, "blank": 9},
-            # 状态6,发现e(后面只能符号位, 和数字)
-            {"sign": 7, "digit": 8},
-            # 状态7,e之后(只能为数字)
-            {"digit": 8},
-            # 状态8,e之后的数字后面(只能为数字或者以空格结束)
-            {"digit": 8, "blank": 9},
-            # 状态9, 终止状态 (如果发现非空,就失败)
-            {"blank": 9}
-        ]
-        cur_state = 1
-        for c in s:
-            if c.isdigit():
-                c = "digit"
-            elif c in " ":
-                c = "blank"
-            elif c in "+-":
-                c = "sign"
-            elif c in 'eE':
-                c = 'e'
-            if c not in state[cur_state]:
+        m = {
+            'start': {'signed': 'first_signed', 'digit': 'first_digit', 'dot': 'space_dot'},
+            'space_dot': {'digit': 'second_digit'},
+            'first_signed': {'digit': 'first_digit', 'dot': 'space_dot'},
+            'first_digit': {'digit': 'first_digit', 'dot': 'dot', 'e': 'e'},
+            'dot': {'digit': 'second_digit', 'e': 'e'},
+            'e': {'signed': 'e_signed', 'digit': 'e_digit'},
+            'second_digit': {'digit': 'second_digit', 'e': 'e'},
+            'e_digit': {'digit': 'e_digit'},
+            'e_signed': {'digit': 'e_digit'},
+        }
+        end = {'first_digit', 'second_digit', 'e_digit', 'dot'}
+        alls = set()
+        status = 'start'
+        for ch in s:
+            if ch in '+-':
+                nxt = 'signed'
+            elif ch in '0123456789':
+                nxt = 'digit'
+            elif ch == '.':
+                nxt = 'dot'
+            elif ch in 'eE':
+                nxt = 'e'
+            else:
                 return False
-            cur_state = state[cur_state][c]
-        if cur_state not in [3, 5, 8, 9]:
+            if nxt not in m[status]:
+                return False
+            status = m[status][nxt]
+            alls.add(status)
+        if status not in end:
             return False
+        # if status == 'dot' and alls != {'first_digit', 'dot'}:
+        #     return False
         return True
-
-
-Solution().isNumber("1E9")
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().isNumber('-1.'))
 
 
 class Solution:

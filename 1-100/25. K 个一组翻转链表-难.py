@@ -28,93 +28,38 @@ k 是一个正整数，它的值小于或等于链表的长度。
 """
 
 
-class ListNode:
-    def __init__(self, x):
-        self.val = x
-        self.next = None
+from typing import List, Optional
 
 
-# --------------------caojie_26%----------------------------------------------------------------------------------------
-def reverseKGroup(head: ListNode, k: int) -> ListNode:
-    a = []
-    i = 0
-    new = ListNode(0)  # 新做new链来接从head链上取下的节点
-    H = new  # 保存头节点
-    while head:
-        a.append(head)
-        head = head.next
-        i += 1
-        if i == k:
-            while i > 0:
-                new.next = a.pop()
-                i -= 1
-                new = new.next
-            new.next = head
-    j = 0
-    while j < i:
-        new.next = a[j]
-        new = new.next
-        j += 1
-    new.next = head
-    return H.next
-
-
-
-#----------------------模拟法------------------------------------------------------------------------
 class Solution:
-    # 翻转一个子链表，并且返回新的头与尾，反转链表
-    def reverse(self, head: ListNode, tail: ListNode):
-        prev = tail.next
-        p = head
-        while prev != tail:
-            nex = p.next
-            p.next = prev
-            prev = p
-            p = nex
-        return tail, head
+    def reverse_list(self, head, k):
+        pre = None
+        cur = head
+        tail = head
+        while cur and k > 0:
+            cur.next, pre, cur = pre, cur, cur.next
+            k -= 1
+        next_cur = cur
+        if k > 0:
+            cur = pre
+            tail = cur
+            pre = None
+            next_cur = None
+            while cur:
+                cur.next, pre, cur = pre, cur, cur.next
+        return pre, tail, next_cur
 
-    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
-        hair = ListNode(0)
-        hair.next = head
-        pre = hair
-
-        while head:
-            tail = pre
-            # 查看剩余部分长度是否大于等于 k
-            for i in range(k):
-                tail = tail.next
-                if not tail:
-                    return hair.next
-            nex = tail.next
-            head, tail = self.reverse(head, tail)
-            # 把子链表重新接回原链表
-            pre.next = head
-            tail.next = nex
-            pre = tail
-            head = tail.next
-
-# 链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group/solution/k-ge-yi-zu-fan-zhuan-lian-biao-by-leetcode-solutio/
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        H = ListNode(0)
+        last_tail = H
+        cur = head
+        while cur:
+            pre, tail, next_cur = self.reverse_list(cur, k)
+            last_tail.next = pre
+            cur = next_cur
+            last_tail = tail
+        return H.next
 
 
-
-
-
-
-def stringToListNode(numbers: list):
-    # Generate list from the input
-
-    # Now convert that list into linked list
-    dummyRoot = ListNode(0)
-    ptr = dummyRoot
-    for number in numbers:
-        ptr.next = ListNode(number)
-        ptr = ptr.next
-
-    ptr = dummyRoot.next
-    return ptr
-
-
-list1 = [1, 2, 3, 4, 5]
-k = 2
-head = stringToListNode(list1)
-reverseKGroup(head, k)
+# leetcode submit region end(Prohibit modification and deletion)
+Solution().reverseKGroup(ListNode(1, ListNode(2, ListNode(3, ListNode(4, ListNode(5))))), 3)

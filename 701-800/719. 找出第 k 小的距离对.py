@@ -86,8 +86,7 @@ class Solution(object):
 
         def bis_cal(size):
             left = 0
-            right = \
-                0
+            right = 0
             count = 0
             while right < len(nums):
                 while nums[right] - nums[left] > size:

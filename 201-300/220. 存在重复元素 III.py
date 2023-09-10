@@ -1,70 +1,68 @@
-'''
-在整数数组 nums 中，是否存在两个下标 i 和 j，使得 nums [i] 和 nums [j] 的差的绝对值小于等于 t ，且满足 i 和 j 的差的绝对值也小于等于 ķ 。
+# 给你一个整数数组 nums 和两个整数 indexDiff 和 valueDiff 。
+#
+#  找出满足下述条件的下标对 (i, j)：
+#
+#
+#  i != j,
+#  abs(i - j) <= indexDiff
+#  abs(nums[i] - nums[j]) <= valueDiff
+#
+#
+#  如果存在，返回 true ；否则，返回 false 。
+#
+#
+#
+#  示例 1：
+#
+#
+# 输入：nums = [1,2,3,1], indexDiff = 3, valueDiff = 0
+# 输出：true
+# 解释：可以找出 (i, j) = (0, 3) 。
+# 满足下述 3 个条件：
+# i != j --> 0 != 3
+# abs(i - j) <= indexDiff --> abs(0 - 3) <= 3
+# abs(nums[i] - nums[j]) <= valueDiff --> abs(1 - 1) <= 0
+#
+#
+#  示例 2：
+#
+#
+# 输入：nums = [1,5,9,1,5,9], indexDiff = 2, valueDiff = 3
+# 输出：false
+# 解释：尝试所有可能的下标对 (i, j) ，均无法满足这 3 个条件，因此返回 false 。
+#
+#
+#
+#
+#  提示：
+#
+#
+#  2 <= nums.length <= 10⁵
+#  -10⁹ <= nums[i] <= 10⁹
+#  1 <= indexDiff <= nums.length
+#  0 <= valueDiff <= 10⁹
+#
+#
+#  Related Topics 数组 桶排序 有序集合 排序 滑动窗口
+#  👍 704 👎 0
 
-如果存在则返回 true，不存在返回 false。
 
- 
-
-示例 1:
-
-输入: nums = [1,2,3,1], k = 3, t = 0
-输出: true
-示例 2:
-
-输入: nums = [1,0,1,1], k = 1, t = 2
-输出: true
-示例 3:
-
-输入: nums = [1,5,9,1,5,9], k = 2, t = 3
-输出: false
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/contains-duplicate-iii
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
-'''
-from typing import List
-
-# 二叉搜索树 自平衡二叉搜索树 AVL树
-
-from bintrees import avltree
-
-
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
-    def containsNearbyAlmostDuplicate(self, nums: List[int], k: int, t: int) -> bool:
-        if len(nums) < 2:
-            return False
-        b = avltree.AVLTree()
-        b.insert(nums[0], 0)
-        for i in range(1, len(nums)):
-            if i > k:
-                b.remove(nums[i - k - 1])
-            if (b.min_key() <= nums[i] and nums[i] - b.floor_key(nums[i]) <= t) or (
-                    b.max_key() >= nums[i] and b.ceiling_key(nums[i]) - nums[i] <= t):
+    def containsNearbyAlmostDuplicate(self, nums: List[int], indexDiff: int, valueDiff: int) -> bool:
+        ma, mi = max(nums), min(nums)
+        bucket_num = (ma - mi) // (valueDiff + 1) + 1
+        buckets = [[] for _ in range(bucket_num)]
+        for i, num in enumerate(nums):
+            idx = (num - mi) // (valueDiff + 1)
+            if buckets[idx]:
                 return True
-            b.insert(nums[i], i)
+            buckets[idx].append(num)
+            if idx > 0 and buckets[idx - 1] and num - buckets[idx - 1][-1] <= valueDiff:
+                return True
+            if idx < bucket_num - 1 and buckets[idx + 1] and buckets[idx + 1][0] - num <= valueDiff:
+                return True
+            if i >= indexDiff:
+                buckets[(nums[i - indexDiff] - mi) // (valueDiff + 1)].pop()
         return False
-
-
-from collections import defaultdict
-
-#桶
-class Solution:
-    def containsNearbyAlmostDuplicate(self, nums: List[int], k: int, t: int) -> bool:
-        if k<=0 or t<0:
-            return False
-        s = defaultdict(list)
-        size = t + 1
-        for i in range(len(nums)):
-            if i > k:
-                s[nums[i - k - 1] // size] = []
-            m = nums[i] // size
-            if s[m]:
-                return True
-            elif s[m-1] and nums[i]-s[m-1][0]<=t or s[m+1] and s[m+1][0]-nums[i]<=t: #每个桶里如果超过一个元素，则直接会返回True
-                return True
-            s[m].append(nums[i])
-        return False
-
-
-nums = [2,1,9,6,8,7]; k = 1; t = 1
-Solution().containsNearbyAlmostDuplicate(nums, k, t)
+# leetcode submit region end(Prohibit modification and deletion)

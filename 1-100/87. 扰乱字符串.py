@@ -71,25 +71,23 @@ class Solution:
 # 三维动态规划思路
 class Solution:
     def isScramble(self, s1: str, s2: str) -> bool:
-        if not s1 or not s2 or len(s1) != len(s2):
-            return False
-        if s1 == s2:
-            return True
-        dp = [[[False] * (len(s1) + 1) for _ in range(len(s2))] for _ in range(len(s1))]
-        # 初始化
-        l1, l2 = len(s1), len(s2)
-        for i in range(l1):
-            for j in range(l2):
-                dp[i][j][1] = s1[i] == s2[j]
-        # 填制dp表,dp[i][j][l]为s1从i，s2从j开始长度为l的是否为scramble数组
-        # 三个问题
-        # 1：转移方程，设置长度为k的分割点 dp[i][j][l]需要考察(dp[i][j][k] and dp[i+k][j+k][l-k]) 或者 dp[i+k][j][l-k] and dp[i][j+l-k][k]
-        # 2：为什么l从1开始？因为题目中明确规定子树为非空树，即使有空树，交换也是无意义的。
-        # 3：为什么从0，0开始遍历，因为最高层为l，l为1时的所有情况已经在初始化的过程中设置完了。之后层次的所有值都可以从前一层次的值获取到
-        for l in range(2, l1 + 1):  # 为什么要l1+1,因为到l1-1其实就得到我们所有想要的元素，可以求出dp[0][0][l1]的值了，但是需要多出计算的一步，公式是一致的，可以扩充一格存放结果值
-            for i in range(l1 - l + 1):
-                for j in range(l1 - l + 1):
-                    for k in range(1, l):
-                        if (dp[i][j][k] and dp[i + k][j + k][l - k]) or (dp[i + k][j][l - k] and dp[i][i + l - k][k]):
-                            dp[i][j][l] = True  # 从k为1开始遍历，只要有一个为True,即dp[i][j][l]=True,有False值也不会修改
-        return dp[0][0][l1]
+        l = len(s1)
+        dp = [[[False for _ in range(l)] for _ in range(l)] for _ in range(l + 1)]
+        for i in range(l - 1, -1, -1):
+            for j in range(l - 1, -1, -1):
+                for K in range(1, l + 1):
+                    if i + K > l or j + K > l:
+                        continue
+                    if s1[i:i + K] == s2[j:j + K]:
+                        dp[K][i][j] = True
+                    elif K == 1:
+                        continue
+                    else:
+                        for k in range(1, K):
+                            if dp[k][i][j] and dp[K - k][i + k][j + k]:
+                                dp[K][i][j] = True
+                                break
+                            elif dp[k][i][j + K - k] and dp[K - k][i + k][j]:
+                                dp[K][i][j] = True
+                                break
+        return dp[l][0][0]

@@ -1,62 +1,75 @@
-'''删除最小数量的无效括号，使得输入的字符串有效，返回所有可能的结果。
+# 给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。 
+# 
+#  返回所有可能的结果。答案可以按 任意顺序 返回。 
+# 
+#  
+# 
+#  示例 1： 
+# 
+#  
+# 输入：s = "()())()"
+# 输出：["(())()","()()()"]
+#  
+# 
+#  示例 2： 
+# 
+#  
+# 输入：s = "(a)())()"
+# 输出：["(a())()","(a)()()"]
+#  
+# 
+#  示例 3： 
+# 
+#  
+# 输入：s = ")("
+# 输出：[""]
+#  
+# 
+#  
+# 
+#  提示： 
+# 
+#  
+#  1 <= s.length <= 25 
+#  s 由小写英文字母以及括号 '(' 和 ')' 组成 
+#  s 中至多含 20 个括号 
+#  
+# 
+#  Related Topics 广度优先搜索 字符串 回溯 
+#  👍 867 👎 0
 
-说明: 输入可能包含了除 ( 和 ) 以外的字符。
 
-示例 1:
-
-输入: "()())()"
-输出: ["()()()", "(())()"]
-示例 2:
-
-输入: "(a)())()"
-输出: ["(a)()()", "(a())()"]
-示例 3:
-
-输入: ")("
-输出: [""]
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/remove-invalid-parentheses
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-from typing import List
-
-
-# 回溯法
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def removeInvalidParentheses(self, s: str) -> List[str]:
-        mleft = mright = 0
-        for i in s:
-            if i == '(':
-                mleft += 1
-            elif i == ')' and mleft > 0:
-                mleft -= 1
-            elif i == ')':
-                mright += 1
-        n = len(s)
+        mis_left, mis_right = 0, 0
+        for ch in s:
+            if ch == '(':
+                mis_left += 1
+            elif ch == ')':
+                if mis_left > 0:
+                    mis_left -= 1
+                else:
+                    mis_right += 1
         res = set()
 
-        def backtrack(s, index, left_num, right_num, misleft, misright, expr):
-            if index == n:
-                if misleft == mleft and misright == mright:
-                    res.add(''.join(expr))
-            elif misleft <= mleft and misright <= mright:
-                if s[index] not in ('(', ')'):
-                    expr.append(s[index])
-                    backtrack(s, index + 1, left_num, right_num, misleft, misright, expr)
-                    expr.pop()
-                else:
-                    backtrack(s, index + 1, left_num, right_num, misleft + int(s[index] == '('),
-                              misright + int(s[index] == ')'), expr)
-                    if s[index] == '(':
-                        expr.append(s[index])
-                        backtrack(s, index + 1, left_num + 1, right_num, misleft, misright, expr)
-                        expr.pop()
-                    elif s[index] == ')' and left_num > right_num:
-                        expr.append(s[index])
-                        backtrack(s, index + 1, left_num, right_num + 1, misleft, misright, expr)
-                        expr.pop()
-
-        backtrack(s, 0, 0, 0, 0, 0, [])
+        def back_track(idx, bal, left_rem, right_rem, expr):
+            if idx == len(s):
+                if bal == 0 and left_rem == 0 and right_rem == 0:
+                    res.add(expr)
+                return
+            if s[idx] == '(':
+                back_track(idx + 1, bal + 1, left_rem, right_rem, expr + '(')
+                if left_rem > 0:
+                    back_track(idx + 1, bal, left_rem - 1, right_rem, expr)
+            elif s[idx] == ')':
+                if bal > 0:
+                    back_track(idx + 1, bal - 1, left_rem, right_rem, expr + ')')
+                if right_rem > 0:
+                    back_track(idx + 1, bal, left_rem, right_rem - 1, expr)
+            else:
+                back_track(idx + 1, bal, left_rem, right_rem, expr + s[idx])
+        back_track(0, 0, mis_left, mis_right, '')
         return list(res)
 
-Solution().removeInvalidParentheses(")(")
+# leetcode submit region end(Prohibit modification and deletion)

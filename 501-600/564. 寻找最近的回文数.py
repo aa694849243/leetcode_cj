@@ -1,85 +1,92 @@
-'''给定一个整数 n ，你需要找到与它最近的回文数（不包括自身）。
+# 给定一个表示整数的字符串 n ，返回与它最近的回文整数（不包括自身）。如果不止一个，返回较小的那个。
+#
+#  “最近的”定义为两个整数差的绝对值最小。
+#
+#
+#
+#  示例 1:
+#
+#
+# 输入: n = "123"
+# 输出: "121"
+#
+#
+#  示例 2:
+#
+#
+# 输入: n = "1"
+# 输出: "0"
+# 解释: 0 和 2是最近的回文，但我们返回最小的，也就是 0。
+#
+#
+#
+#
+#  提示:
+#
+#
+#  1 <= n.length <= 18
+#  n 只由数字组成
+#  n 不含前导 0
+#  n 代表在 [1, 10¹⁸ - 1] 范围内的整数
+#
+#
+#  Related Topics 数学 字符串
+#  👍 278 👎 0
 
-“最近的”定义为两个整数差的绝对值最小。
 
-示例 1:
-
-输入: "123"
-输出: "121"
-注意:
-
-n 是由字符串表示的正整数，其长度不超过18。
-如果有多个结果，返回最小的那个。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/find-the-closest-palindrome
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-
-
-# 1数学法
-# 方法二 https://leetcode-cn.com/problems/find-the-closest-palindrome/solution/xun-zhao-zui-jin-de-hui-wen-shu-by-leetcode/
-# 简化版 https://leetcode-cn.com/problems/find-the-closest-palindrome/solution/jian-hua-guan-fang-ti-jie-de-si-lu-by-ming-ye/
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def nearestPalindromic(self, n: str) -> str:
-        def mirror(n):
-            half = n[:len(n) // 2]
-            if len(n) % 2:  # 奇数长度
-                return half + n[len(n) // 2] + half[::-1]
+        if n=='1':
+            return '0'
+        def mirror(s):
+            n = len(s)
+            if n % 2:
+                return int(s[:n // 2 + 1] + s[:n // 2][::-1])
             else:
-                return half + half[::-1]
+                return int(s[:n // 2] + s[:n // 2][::-1])
 
-        def getsmall(n):
-            half = n[:len(n) // 2 + 1]  # 包括中间数字
-            if len(n) % 2:  # 奇数情况
-                half_new = str(int(half) - 1)
-                if len(half_new) == len(half):  # 长度不变
-                    return half_new + half_new[:-1][::-1]
+        def gt_s(s):
+            n = len(s)
+            if n % 2:
+                half = s[:n // 2 + 1]
+                if half == '9' * (n // 2 + 1):  # 进位了
+                    return int('1' + '0' * (n - 1) + '1')
                 else:
-                    return half_new + half_new[::-1]
-            else:  # 偶数情况
-                half_new = str(int(half[:-1]) - 1)
-                if half_new == '0':
-                    return '9'
-                elif len(half_new) < len(half) - 1:  # 减少了位数
-                    return '9' * (len(n) - 1)  # 减少了位数只有可能是999...
-                else:
-                    return half_new + half_new[::-1]
-
-        def getbig(n):
-            half = n[:len(n) // 2 + 1]  # 包括中间数字
-            if len(n) % 2:  # 奇数情况
-                half_new = str(int(half) + 1)
-                if len(half_new) == len(half): #长度不变
-                    return half_new + half_new[:-1][::-1]
-                else: #增加了1位
-                    return half_new[:-1] + half_new[:-1][::-1]
+                    half = str(int(half) + 1)
+                    return int(half + half[:-1][::-1])
             else:
-                half_new = str(int(half[:-1]) + 1)
-                if len(half_new) == len(half):  # 增加了1位
-                    return half_new + half_new[:-1][::-1]
+                half = s[:n // 2]
+                if half == '9' * (n // 2):  # 进位了
+                    return int('1' + '0' * (n - 1) + '1')
                 else:
-                    return half_new + half_new[::-1]
+                    half = str(int(half) + 1)
+                    return int(half + half[::-1])
 
-        if n == 0:
-            return '1'
-        if len(n) == 1:
-            return str(int(n) - 1)
-        mir = mirror(n)
-        a = getsmall(n)
-        b = getbig(n)
-        if mir == n:
-            return a if abs(int(a) - int(n)) <= abs(int(b) - int(n)) else b
-        else:
-            c_dif = abs(int(mir) - int(n))
-            a_dif = abs(int(a) - int(n))
-            b_dif = abs(int(b) - int(n))
-            x = min(a_dif, b_dif, c_dif)
-            if a_dif == x:
-                return a
-            elif c_dif == x:
-                return mir
+        def lt_s(s):
+            n = len(s)
+            if n % 2:
+                half = s[:n // 2 + 1]
+                if half == '1' + '0' * (n // 2):  # 位数减少
+                    return int('9' * (n - 1))
+                else:
+                    half = str(int(half) - 1)
+                    return int(half + half[:-1][::-1])
             else:
-                return b
+                half = s[:n // 2]
+                if half == '1' + '0' * (n // 2 - 1):  # 位数减少
+                    return int('9' * (n - 1))
+                else:
+                    half = str(int(half) - 1)
+                    return int(half + half[::-1])
 
+        diff_a = abs(int(n) - (a := mirror(n)))
+        diff_b = abs(int(n) - (b := gt_s(n)))
+        diff_c = abs(int(n) - (c := lt_s(n)))
+        diff_a = diff_a if diff_a else float('inf')
+        diff_b = diff_b if diff_b else float('inf')
+        diff_c = diff_c if diff_c else float('inf')
+        return str(sorted([(diff_a,a),(diff_b,b),(diff_c,c)])[0][1])
 
-Solution().nearestPalindromic("999")
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().nearestPalindromic('2'))

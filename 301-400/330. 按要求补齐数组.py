@@ -1,56 +1,69 @@
-'''给定一个已排序的正整数数组 nums，和一个正整数 n 。从 [1, n] 区间内选取任意个数字补充到 nums 中，使得 [1, n] 区间内的任何数字都可以用 nums 中某几个数字的和来表示。请输出满足上述要求的最少需要补充的数字个数。
+# 给定一个已排序的正整数数组 nums ，和一个正整数 n 。从 [1, n] 区间内选取任意个数字补充到 nums 中，使得 [1, n] 区间内的任何数字
+# 都可以用 nums 中某几个数字的和来表示。
+#
+#  请返回 满足上述要求的最少需要补充的数字个数 。
+#
+#
+#
+#  示例 1:
+#
+#
+# 输入: nums = [1,3], n = 6
+# 输出: 1
+# 解释:
+# 根据 nums 里现有的组合 [1], [3], [1,3]，可以得出 1, 3, 4。
+# 现在如果我们将 2 添加到 nums 中， 组合变为: [1], [2], [3], [1,3], [2,3], [1,2,3]。
+# 其和可以表示数字 1, 2, 3, 4, 5, 6，能够覆盖 [1, 6] 区间里所有的数。
+# 所以我们最少需要添加一个数字。
+#
+#  示例 2:
+#
+#
+# 输入: nums = [1,5,10], n = 20
+# 输出: 2
+# 解释: 我们需要添加 [2,4]。
+#
+#
+#  示例 3:
+#
+#
+# 输入: nums = [1,2,2], n = 5
+# 输出: 0
+#
+#
+#
+#
+#  提示：
+#
+#
+#  1 <= nums.length <= 1000
+#  1 <= nums[i] <= 10⁴
+#  nums 按 升序排列
+#  1 <= n <= 2³¹ - 1
+#
+#
+#  Related Topics 贪心 数组
+#  👍 354 👎 0
 
-示例 1:
 
-输入: nums = [1,3], n = 6
-输出: 1
-解释:
-根据 nums 里现有的组合 [1], [3], [1,3]，可以得出 1, 3, 4。
-现在如果我们将 2 添加到 nums 中， 组合变为: [1], [2], [3], [1,3], [2,3], [1,2,3]。
-其和可以表示数字 1, 2, 3, 4, 5, 6，能够覆盖 [1, 6] 区间里所有的数。
-所以我们最少需要添加一个数字。
-示例 2:
-
-输入: nums = [1,5,10], n = 20
-输出: 2
-解释: 我们需要添加 [2, 4]。
-示例 3:
-
-输入: nums = [1,2,2], n = 5
-输出: 0
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/patching-array
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-from typing import List
-
-
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def minPatches(self, nums: List[int], n: int) -> int:
-        count = 0
-        d = [1]
-        miss = 1
-        p = 0
-        while d[-1] <= n:
-            if p < len(nums):
-                if nums[p] == miss:
-                    miss += miss
-                    d.append(miss)
-                    p += 1
-                elif nums[p] < miss:
-                    miss += nums[p]
-                    d.append(miss)
-                    p += 1
+        cnt = 0
+        lst = [1]
+        i = 0
+        mx_sum = 0
+        while mx_sum < n:
+            if i < len(nums):
+                if nums[i] <= mx_sum + 1:
+                    mx_sum += nums[i]
+                    i += 1
                 else:
-                    miss += miss
-                    d.append(miss)
-                    count+=1
+                    mx_sum += mx_sum + 1
+                    cnt += 1
             else:
-                miss += miss
-                d.append(miss)
-                count+=1
-        return count
+                mx_sum += mx_sum + 1
+                cnt += 1
+        return cnt
 
-
-nums = [1,2,2,6,34,38,41,44,47,47,56,59,62,73,77,83,87,89,94]; n = 20
-Solution().minPatches(nums,n)
+# leetcode submit region end(Prohibit modification and deletion)

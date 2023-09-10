@@ -148,3 +148,53 @@ from leetcode.trick.treenode.T import stringToTreeNode
 a=stringToTreeNode('[1,2,3,null,null,4,5]')
 a=Codec().serialize(a)
 Codec().deserialize(a)
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+from collections import deque
+
+# 先根序+，先根序弹
+class Codec:
+    def rserialize(self, root, string):
+        # Recursive serialization.
+        if root is None:
+            string += "None,"
+        else:
+            string += str(root.val) + ","
+            string = self.rserialize(root.left, string)
+            string = self.rserialize(root.right, string)
+        return string
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+
+        :type root: TreeNode
+        :rtype: str
+        """
+        return self.rserialize(root, "")
+
+    def rdeserialize(self, lst):
+        val = lst.popleft()
+        if val == 'None':
+            return None
+        root = TreeNode(val)
+        root.left = self.rdeserialize(lst)
+        root.right = self.rdeserialize(lst)
+        return root
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+
+        :type data: str
+        :rtype: TreeNode
+        """
+        lst = deque(data.split(','))
+        return self.rdeserialize(lst)
+
+# Your Codec object will be instantiated and called as such:
+# ser = Codec()
+# deser = Codec()
+# ans = deser.deserialize(ser.serialize(root))

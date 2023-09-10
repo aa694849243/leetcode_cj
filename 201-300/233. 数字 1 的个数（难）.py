@@ -16,15 +16,18 @@
 # 数学
 class Solution:
     def countDigitOne(self, n: int) -> int:
-        if n < 1:
-            return 0
-        lenth = len(str(n))
-        count = 0
-        x = 1
-        for i in range(lenth):
-            x *= 10
-            count += (n // x*(x//10) + min(x // 10, max(n % x - x//10 + 1, 0)))
-        return count
+        num = n
+        n = str(n)
+        res = 0
+        l = len(n)
+        pre = 0
+        res = 0
+        for i, ch in enumerate(n):
+            res += (pre + (ch > '1')) * 10 ** (l - i - 1)
+            pre = pre * 10 + int(ch)
+            if ch == '1':
+                res += num % (pre * (10 ** (l - i - 1))) + 1
+        return res
 
 
 Solution().countDigitOne(110)

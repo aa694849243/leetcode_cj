@@ -36,6 +36,7 @@ wordList = ["hot","dot","dog","lot","log"]
 链接：https://leetcode-cn.com/problems/word-ladder
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 '''
+import collections
 from typing import List
 from collections import deque
 from collections import defaultdict
@@ -43,45 +44,38 @@ from collections import defaultdict
 
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        map1, map2 = {}, {}
-        if (endWord not in wordList) or not beginWord or not wordList:
+        if endWord not in wordList:
             return 0
-        if beginWord not in wordList:
-            wordList = [beginWord] + wordList
-        lw, ll = len(beginWord), len(wordList)
-        for i in range(ll):
-            map1[wordList[i]] = i
-            map2[i] = wordList[i]
-        buckets = defaultdict(list)
-        for i in range(ll):
-            for k in range(lw):
-                match = wordList[i][:k] + '_' + wordList[i][k + 1:]
-                buckets[match].append(map1[wordList[i]])
-        values = buckets.values()
-        adjacency = defaultdict(list)
-        for j in values:
-            for i in range(len(j)):
-                adjacency[j[i]].extend(j[:i] + j[i + 1:])
-        cost = [-1] * ll
-        cost[map1[beginWord]] = 0
+        g = collections.defaultdict(list)
+        wordList.append(beginWord)
+        s = set(wordList)
+        for word in wordList:
+            for i, ch in enumerate(word):
+                for letter in 'abcdefghijklmnopqrstuvwxyz':
+                    if letter != ch:
+                        tmp = word[:i] + letter + word[i + 1:]
+                        if tmp in s:
+                            g[word].append(tmp)
+        step = 0
+        T = {beginWord}
+        visted = {beginWord}
+        while 1:
+            tree = set()
+            for word in T:
+                if word == endWord:
+                    return step + 1
+                for next_word in g[word]:
+                    if next_word not in visted:
+                        tree.add(next_word)
+                        visted.add(next_word)
+            if not tree:
+                break
+            T = tree
+            step += 1
+        return 0
 
-        def bfs(vi):
-            qu = deque()
-            qu.append([vi])
-            while qu:
-                a = qu.popleft()
-                for i in adjacency[a[-1]]:
-                    if cost[i] == -1:
-                        cost[i] = cost[a[-1]] + 1
-                        if i == map1[endWord]:
-                            return cost[i]+1
-                        qu.append(a + [i])
-            return 0
+        # leetcode submit region end(Prohibit modification and deletion)
 
-        return bfs(map1[beginWord])
-
-
-beginWord = "hit"
-endWord = "cog"
-wordList = ["hot", "dot", "dog", "lot", "log", "cog"]
-Solution().ladderLength(beginWord,endWord,wordList)
+    print(
+        Solution().ladderLength("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"])
+    )

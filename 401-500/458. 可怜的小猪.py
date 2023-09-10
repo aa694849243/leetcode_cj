@@ -36,6 +36,41 @@
 #量子🐖应该可以理解成进制问题，比如说2种状态3只猪，就是3位2进制0-7，000表示三只猪都没喝，010表示只有第二只猪喝了，那么这个时候最多8桶水能有唯一状态。
 #https://leetcode-cn.com/problems/poor-pigs/solution/ke-lian-de-xiao-zhu-by-leetcode/
 import math
+import math
+
+
+# leetcode submit region begin(Prohibit modification and deletion)
+# https://leetcode.cn/problems/poor-pigs/solution/hua-jie-suan-fa-458-ke-lian-de-xiao-zhu-by-guanpen/
+# 信息位为base，可观测死亡状态+1
+# pow(base, ans) ≥ buckets
 class Solution:
     def poorPigs(self, buckets: int, minutesToDie: int, minutesToTest: int) -> int:
-        return math.ceil(math.log(buckets)/math.log(((minutesToTest//minutesToDie)+1)))
+        base = minutesToTest // minutesToDie + 1
+        return math.ceil(math.log(buckets)/math.log(base)-1e-10)
+
+class Solution:
+    def poorPigs(self, buckets: int, minutesToDie: int, minutesToTest: int) -> int:
+        iters = minutesToTest // minutesToDie
+        combins = [[0] * (buckets) for _ in range(buckets)]
+        for i in range(buckets):
+            combins[i][0] = 1
+            combins[i][i] = 1
+            for j in range(1, i):
+                combins[i][j] = combins[i - 1][j - 1] + combins[i - 1][j]
+        if buckets == 1:
+            return 0
+        f = [[0] * (iters + 1) for _ in range(buckets)]
+        for i in range(buckets):
+            f[i][0] = 1
+        for j in range(1, iters + 1):
+            f[0][j] = 1
+        for pig in range(1, buckets):
+            for iter in range(1, iters + 1):
+                for i in range(0, pig + 1):
+                    f[pig][iter] += f[pig - i][iter - 1] * combins[pig][i]
+                if f[pig][iter] >= buckets:
+                    return pig
+        return buckets - 1
+
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().poorPigs(4, 15, 30))

@@ -41,20 +41,22 @@ from typing import List
 # 暴力法会超出时间限制
 class Solution:
     def candy(self, ratings: List[int]) -> int:
-        if len(ratings) < 2:
-            return len(ratings)
-        candies = [1] * len(ratings)
-        change = 1
-        while change:
-            change = 0
-            for i in range(1, len(ratings)):
-                if ratings[i] > ratings[i - 1] and candies[i] <= candies[i - 1]:
-                    candies[i] = candies[i - 1] + 1
-                    change += 1
-                elif ratings[i - 1] > ratings[i] and candies[i - 1] <= candies[i]:
-                    candies[i - 1] = candies[i] + 1
-                    change += 1
-        return sum(candies)
+        res = [1] * len(ratings)
+        hq = []
+        for i, r in enumerate(ratings):
+            heapq.heappush(hq, (r, i))
+        while hq:
+            cur_r, cur_i = heapq.heappop(hq)
+            if cur_i == 0 and cur_i+1<len(ratings):
+                res[cur_i] = res[cur_i + 1] + 1 if ratings[cur_i + 1] < cur_r else 1
+            elif cur_i == len(ratings) - 1:
+                res[cur_i] = res[cur_i - 1] + 1 if ratings[cur_i - 1] < cur_r else 1
+            else:
+                if cur_r > ratings[cur_i - 1]:
+                    res[cur_i] = max(res[cur_i - 1] + 1, 1, res[cur_i])
+                if cur_r > ratings[cur_i + 1]:
+                    res[cur_i] = max(res[cur_i + 1] + 1, 1, res[cur_i])
+        return sum(res)
 
 
 '''

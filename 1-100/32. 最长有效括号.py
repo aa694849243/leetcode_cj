@@ -53,29 +53,28 @@ class Solution:
 
         return M
 
-#---动态规划------------------------------------------------------------------------------------------
-#--https://leetcode-cn.com/problems/longest-valid-parentheses/solution/xiao-bai-du-neng-kan-dong-de-dong-tai-gui-hua-si-l/
+
+# ---动态规划------------------------------------------------------------------------------------------
+# --https://leetcode-cn.com/problems/longest-valid-parentheses/solution/xiao-bai-du-neng-kan-dong-de-dong-tai-gui-hua-si-l/
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def longestValidParentheses(self, s: str) -> int:
-        s = ' ' + s
-        dp = [0 for _ in range(len(s))]
-        maxs = 0
-        for i in range(1, len(s), 1):
-            if s[i] == ')':
-                if i - 1 >= 0 and s[i - 1] == '(':
-                    # 情况1
-                    if i - 1 == 0:
-                        dp[i] = 2
-                        maxs = max(maxs, dp[i])
-                    else:
-                        dp[i] = dp[i - 2] + 2
-                        maxs = max(maxs, dp[i])
-                elif i - 1 >= 0 and s[i - 1] == ')':
-                    # 情况2
-                    if i - dp[i - 1] - 1 >= 0 and s[i - dp[i - 1] - 1] == '(':
-                        dp[i] = dp[i - 1] + dp[i - dp[i - 1] - 2] + 2
-                        maxs = max(maxs, dp[i])
-        return maxs
+        stk = [-1]
+        ans = 0
+        for i, c in enumerate(s):
+            if c == '(':
+                stk.append(i)
+            else:
+                stk.pop()
+                if not stk:
+                    stk.append(i)
+                ans = max(ans, i - stk[-1])
+        return ans
 
 
-Solution().longestValidParentheses(S)
+# leetcode submit region end(Prohibit modification and deletion)
+print(
+    Solution().longestValidParentheses(
+        ")()())"
+    )
+)

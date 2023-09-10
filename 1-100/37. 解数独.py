@@ -99,64 +99,48 @@ class Solution:
 
 
 # 2位操作
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def solveSudoku(self, board: List[List[str]]) -> None:
         """
         Do not return anything, modify board in-place instead.
         """
-        R = [0] * 9
-        C = [0] * 9
-        box = [0] * 9
+        R, C, BOX = [0] * 9, [0] * 9, [0] * 9
 
-        def flip(i, j, num):  # num最高为8
-            R[i] ^= (1 << num)
-            C[j] ^= (1 << num)
+        def flip(i, j, num):
+            R[i] ^= 1 << num
+            C[j] ^= 1 << num
             x, y = i // 3, j // 3
-            box[x * 3 + y] ^= (1 << num)
-
-        def dfs(pos):
-            nonlocal valid
-            if pos == len(spaces):
-                valid = True
-                return
-            i, j = spaces[pos]
-            mask = ~(R[i] | C[j] | box[(i // 3) * 3 + j // 3]) & 0x1ff
-            while mask:
-                bitmask = mask & (-mask)
-                p = bin(bitmask).count('0') - 1
-                flip(i, j, p)
-                board[i][j] = str(p + 1)  # 这里的board[i][j]不用还原，因为记住了位置，每次在相应位置处直接修改
-                dfs(pos + 1)
-                mask &= (mask - 1)
-                flip(i, j, p)
-                if valid:
-                    return
+            BOX[x * 3 + y] ^= 1 << num
+            return
 
         spaces = []
-        for index in range(81):
-            i, j = index // 9, index % 9
-            if board[i][j] != '.':
-                flip(i, j, int(board[i][j]) - 1)
-        while True:
-            modified = False
-            for index in range(81):
-                i, j = index // 9, index % 9
+        for i in range(9):
+            for j in range(9):
                 if board[i][j] == '.':
-                    mask = ~(R[i] | C[j] | box[(i // 3) * 3 + j // 3]) & 0x1ff
-                    if bin(mask).count('1') == 1:  # 只有1个1
-                        digit = bin(mask).count('0') - 1
-                        flip(i, j, digit)
-                        board[i][j] = str(digit + 1)
-                        modified = True
-            if not modified:
-                break
-        for index in range(81):
-            i, j = index // 9, index % 9
-            if board[i][j] == '.':
-                spaces.append((i, j))
-        valid=False
+                    spaces.append((i, j))
+                else:
+                    num = int(board[i][j]) - 1
+                    flip(i, j, num)
+        Valid = False
+
+        def dfs(pos):
+            nonlocal Valid
+            if pos == len(spaces):
+                Valid = True
+                return
+            i, j = spaces[pos]
+            mask = ~(R[i] | C[j] | BOX[i // 3 * 3 + j // 3]) & ((1 << 9) - 1)
+            while mask:
+                u = mask & -mask
+                num = u.bit_length() - 1
+                flip(i, j, num)
+                board[i][j] = str(num + 1)
+                dfs(pos + 1)
+                flip(i, j, num)
+                if Valid:
+                    return
+                mask &= (mask - 1)
         dfs(0)
-        return
 
-
-Solution().solveSudoku([["5", "3", ".", ".", "7", ".", ".", ".", "."], ["6", ".", ".", "1", "9", "5", ".", ".", "."], [".", "9", "8", ".", ".", ".", ".", "6", "."], ["8", ".", ".", ".", "6", ".", ".", ".", "3"], ["4", ".", ".", "8", ".", "3", ".", ".", "1"], ["7", ".", ".", ".", "2", ".", ".", ".", "6"], [".", "6", ".", ".", ".", ".", "2", "8", "."], [".", ".", ".", "4", "1", "9", ".", ".", "5"], [".", ".", ".", ".", "8", ".", ".", "7", "9"]])
+# leetcode submit region end(Prohibit modification and deletion)

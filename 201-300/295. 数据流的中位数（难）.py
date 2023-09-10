@@ -1,111 +1,69 @@
-'''中位数是有序列表中间的数。如果列表长度是偶数，中位数则是中间两个数的平均值。
-
-例如，
-
-[2,3,4] 的中位数是 3
-
-[2,3] 的中位数是 (2 + 3) / 2 = 2.5
-
-设计一个支持以下两种操作的数据结构：
-
-void addNum(int num) - 从数据流中添加一个整数到数据结构中。
-double findMedian() - 返回目前所有元素的中位数。
-示例：
-
-addNum(1)
-addNum(2)
-findMedian() -> 1.5
-addNum(3)
-findMedian() -> 2
-进阶:
-
-如果数据流中所有整数都在 0 到 100 范围内，你将如何优化你的算法？
-如果数据流中 99% 的整数都在 0 到 100 范围内，你将如何优化你的算法？
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/find-median-from-data-stream
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-
-
-# 用二分法速度会更快
-class MedianFinder:
-
-    def __init__(self):
-        """
-        initialize your data structure here.
-        """
-        self.l = []
-        self.count = 0
-
-    def addNum(self, num: int) -> None:
-        flag = 1
-        if not self.l:
-            self.l.append(num)
-        else:
-            for i in range(len(self.l)):
-                if self.l[i] > num:
-                    flag = 0
-                    self.l.insert(i, num)
-                    break
-            if flag:
-                self.l.insert(i + 1, num)
-        self.count += 1
-
-    def findMedian(self) -> float:
-        if self.count % 2 == 0:
-            return (self.l[self.count // 2] + self.l[self.count // 2 - 1]) / 2
-        else:
-            return self.l[self.count // 2]
-# 堆排序
-import heapq_max
+# 中位数是有序整数列表中的中间值。如果列表的大小是偶数，则没有中间值，中位数是两个中间值的平均值。 
+# 
+#  
+#  例如 arr = [2,3,4] 的中位数是 3 。 
+#  例如 arr = [2,3] 的中位数是 (2 + 3) / 2 = 2.5 。 
+#  
+# 
+#  实现 MedianFinder 类: 
+# 
+#  
+#  MedianFinder() 初始化 MedianFinder 对象。 
+#  void addNum(int num) 将数据流中的整数 num 添加到数据结构中。 
+#  double findMedian() 返回到目前为止所有元素的中位数。与实际答案相差 10⁻⁵ 以内的答案将被接受。 
+#  
+# 
+#  示例 1： 
+# 
+#  
+# 输入
+# ["MedianFinder", "addNum", "addNum", "findMedian", "addNum", "findMedian"]
+# [[], [1], [2], [], [3], []]
+# 输出
+# [null, null, null, 1.5, null, 2.0]
+# 
+# 解释
+# MedianFinder medianFinder = new MedianFinder();
+# medianFinder.addNum(1);    // arr = [1]
+# medianFinder.addNum(2);    // arr = [1, 2]
+# medianFinder.findMedian(); // 返回 1.5 ((1 + 2) / 2)
+# medianFinder.addNum(3);    // arr[1, 2, 3]
+# medianFinder.findMedian(); // return 2.0 
+# 
+#  提示: 
+# 
+#  
+#  -10⁵ <= num <= 10⁵ 
+#  在调用 findMedian 之前，数据结构中至少有一个元素 
+#  最多 5 * 10⁴ 次调用 addNum 和 findMedian 
+#  
+# 
+#  Related Topics 设计 双指针 数据流 排序 堆（优先队列） 
+#  👍 861 👎 0
 import heapq
+
+
+# leetcode submit region begin(Prohibit modification and deletion)
 class MedianFinder:
 
     def __init__(self):
-        """
-        initialize your data structure here.
-        """
-        self.count=0
-        self.left=[]
-        self.right=[]
+        self.left = []
+        self.right = []
+        self.cnt = 0
 
-    def addNum(self, num: int) -> None:
-        heapq_max.heappush_max(self.left,num)
-        a=heapq_max.heappop_max(self.left)
-        heapq.heappush(self.right,a)
-        if not self.count%2:
-            b=heapq.heappop(self.right)
-            heapq_max.heappush_max(self.left,b)
-        self.count+=1
+    def addNum(self, num: int) -> None:  # 从左边流向右边，当右边数量超额,将右边最小的数流向左边
+        heapq.heappush(self.right, -heapq.heappushpop(self.left, -num))
+        if len(self.left) + 1 < len(self.right):
+            heapq.heappush(self.left, -heapq.heappop(self.right))
+        self.cnt += 1
 
     def findMedian(self) -> float:
-        if self.count%2:
-            return self.left[0]
-        return (self.left[0]+self.right[0])/2
+        if self.cnt % 2:
+            return self.right[0]
+        return (self.right[0] - self.left[0]) / 2
 
-#大顶堆
-class MedianFinder:
-
-    def __init__(self):
-        """
-        initialize your data structure here.
-        """
-        self.count=0
-        self.left=[]
-        self.right=[]
-
-    def addNum(self, num: int) -> None:
-        heapq.heappush(self.right,-heapq.heappushpop(self.left,-num))
-        if not self.count%2:
-            heapq.heappush(self.left,-heapq.heappop(self.right))
-        self.count+=1
-
-    def findMedian(self) -> float:
-        if self.count%2:
-            return -self.left[0]
-        return (-self.left[0]+self.right[0])/2
-x=MedianFinder()
-x.addNum(3)
-x.addNum(2)
-x.addNum(4)
-x.findMedian()
+# Your MedianFinder object will be instantiated and called as such:
+# obj = MedianFinder()
+# obj.addNum(num)
+# param_2 = obj.findMedian()
+# leetcode submit region end(Prohibit modification and deletion)

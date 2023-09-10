@@ -1,165 +1,86 @@
-'''给定一个不含重复单词的列表，编写一个程序，返回给定单词列表中所有的连接词。
+# 给你一个 不含重复 单词的字符串数组 words ，请你找出并返回 words 中的所有 连接词 。
+#
+#  连接词 定义为：一个完全由给定数组中的至少两个较短单词（不一定是不同的两个单词）组成的字符串。
+#
+#
+#
+#  示例 1：
+#
+#
+# 输入：words = ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses",
+# "rat","ratcatdogcat"]
+# 输出：["catsdogcats","dogcatsdog","ratcatdogcat"]
+# 解释："catsdogcats" 由 "cats", "dog" 和 "cats" 组成;
+#      "dogcatsdog" 由 "dog", "cats" 和 "dog" 组成;
+#      "ratcatdogcat" 由 "rat", "cat", "dog" 和 "cat" 组成。
+#
+#
+#  示例 2：
+#
+#
+# 输入：words = ["cat","dog","catdog"]
+# 输出：["catdog"]
+#
+#
+#
+#  提示：
+#
+#
+#  1 <= words.length <= 10⁴
+#  1 <= words[i].length <= 30
+#  words[i] 仅由小写英文字母组成。
+#  words 中的所有字符串都是 唯一 的。
+#  1 <= sum(words[i].length) <= 10⁵
+#
+#
+#  Related Topics 深度优先搜索 字典树 数组 字符串 动态规划
+#  👍 298 👎 0
+import functools
 
-连接词的定义为：一个字符串完全是由至少两个给定数组中的单词组成的。
 
-示例:
-
-输入: ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
-
-输出: ["catsdogcats","dogcatsdog","ratcatdogcat"]
-
-解释: "catsdogcats"由"cats", "dog" 和 "cats"组成;
-     "dogcatsdog"由"dog", "cats"和"dog"组成;
-     "ratcatdogcat"由"rat", "cat", "dog"和"cat"组成。
-说明:
-
-给定数组的元素总数不超过 10000。
-给定数组中元素的长度总和不超过 600000。
-所有输入字符串只包含小写字母。
-不需要考虑答案输出的顺序。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/concatenated-words
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-from typing import List
-
-
-# 字典树 不含重复字符串说明空字符串‘’没有用处
-class trie:
+# leetcode submit region begin(Prohibit modification and deletion)
+class Trie:
     def __init__(self):
-        self.look = {}
+        self.lookup = {}
 
-    def insert(self, s):
-        tree = self.look
-        if not s:
-            tree[''] = '$'
-        for ch in s:
-            if ch not in tree:
-                tree[ch] = {}
-            tree = tree[ch]
-        tree['$'] = '$'
+    def insert(self, word):
+        node = self.lookup
+        for char in word:
+            node = node.setdefault(char, {})
+        node['#'] = '#'
 
-    def search(self, s):
-        if not s:
-            return '' in self.look
-        tree = self.look
-        for ch in s:
-            if ch not in tree:
+    def search(self, word):
+        node = self.lookup
+        for char in word:
+            if char not in node:
                 return False
-            tree = tree[ch]
-        return '$' in tree
-
-
-class Solution:
-    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
-        words.sort(key=len)
-        m = trie()
-
-        def check(word):
-            if not word:
-                return True
-            for i in range(len(word)):
-                if m.search(word[:i + 1]) and check(word[i + 1:]):
-                    return True
+            node = node[char]
+        return '#' in node
+    def dfs(self,word,pos,visted):
+        if not word or pos>=len(word):
+            return True
+        if visted[pos]:
             return False
-
-        res = []
-        for word in words:
-            if not word:
-                continue
-            if check(word):
-                res.append(word)
-            m.insert(word)
-        return res
-
-
-# 改合体的方法
-class Solution:
-    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
-        words.sort(key=len)
-        look = {}
-
-        def treeinsert(s):
-            tree = look
-            if not s:
-                tree[''] = '$'
-            for ch in s:
-                if ch not in tree:
-                    tree[ch] = {}
-                tree = tree[ch]
-            tree['$'] = '$'
-
-        def check(word):
-            if not word:
+        visted[pos] = True
+        for i in range(pos,len(visted)):
+            if self.search(word[pos:i+1]) and self.dfs(word,i+1,visted):
                 return True
-            for i in range(len(word)):
-                if search(word[:i + 1]) and check(word[i + 1:]):
-                    return True
-            return False
-
-        def search(s):
-            tree = look
-            for ch in s:
-                if ch not in tree:
-                    return False
-                tree = tree[ch]
-            return '$' in tree
-
-        res = []
-        for word in words:
-            if not word:
-                continue
-            if check(word):
-                res.append(word)
-            treeinsert(word)
-        return res
+        return False
 
 
-# 动态规划
+from typing import List
 class Solution:
     def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
-        words.sort(key=len)
-        m = set()
-
-        def check(s):
-            if not s:
-                return False
-            dp = [True] + [False] * len(s)
-            for i in range(1, len(s) + 1):
-                for j in range(i):
-                    if dp[j]==True and s[j:i] in m:
-                        dp[i] = True
-                        break
-            return dp[-1]
-
+        words.sort(key=lambda x: len(x))
+        trie = Trie()
         res = []
         for word in words:
-            if check(word):
+            if trie.dfs(word,0,[False]*len(word)):
                 res.append(word)
-            m.add(word)
+            else:
+                trie.insert(word)
         return res
-
-class Solution:
-
-    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
-        words.sort(key=len)
-        minl = max(1,len(words[0]))
-        m = set()
-
-        def dfs(word):
-            if not word:
-                return True
-            for i in range(minl, len(word) + 1):
-                if word[:i] in m and dfs(word[i:]):
-                    return True
-            return False
-
-        res = []
-        for word in words:
-            if word and dfs(word):
-                res.append(word)
-            m.add(word)
-        return res
-b=["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
-
-c=Solution().findAllConcatenatedWordsInADict(b)
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().findAllConcatenatedWordsInADict(
+["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
+))

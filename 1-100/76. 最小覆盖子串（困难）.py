@@ -14,38 +14,22 @@
 
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        ls, lt = len(s), len(t)
-
-        mem = {}
-        for i in range(ls):
-            if s[i] in t:
-                if not mem.get(s[i]):
-                    mem[s[i]] = [i]
-                else:
-                    mem[s[i]].append(i)
-        if not mem:
-            return ''
-        product = [[]]
-        for k in range(lt):
-            # if k - 1>=0 and t[k - 1] == t[k]:
-            #     continue
-            if not mem.get(t[k]):
-                return ''
-            x = []
-            for i in product:
-                for j in mem[t[k]]:
-                    if j not in i:
-                        x.append(i + [j])
-            product = x
-            # product = [i + [j] for i in product for j in mem[t[k]] if j not in i]
-        if not product[0] or len(product[0]) < lt:
-            return ''
-        M = float('inf')
-        for i in product:
-            M = min(M, max(i) - min(i))
-            if max(i) - min(i) == M:
-                ans = s[min(i):max(i) + 1]
-        return ans
+        tc = Counter(t)
+        dq = deque()
+        res = ""
+        mi = math.inf
+        tmp = Counter()
+        for i, ch in enumerate(s):
+            if ch in tc:
+                tmp[ch] += 1
+                dq.append(i)
+                while dq and tmp[s[dq[0]]] > tc[s[dq[0]]]:
+                    tmp[s[dq.popleft()]] -= 1
+                diff_c = tc - tmp
+                if len(diff_c) <= 0 and i - dq[0] + 1 < mi:
+                    mi = i - dq[0] + 1
+                    res = s[dq[0]:i + 1]
+        return res
 
 
 #滑动窗口

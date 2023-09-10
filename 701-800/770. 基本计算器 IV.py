@@ -116,6 +116,9 @@ class Solution:
         return P.to_list()
 
 
+print(Solution().basicCalculatorIV(expression="e + 8 - a + 5", evalvars=["e"], evalints=[1]))
+
+
 # 徒手写
 class Poly(collections.Counter):
     def __add__(self, other):
@@ -318,4 +321,4 @@ class Solution:
         return ret
 
 
-Solution().basicCalculatorIV(expression = "e - 8 + temperature - pressure", evalvars = ["e", "temperature"], evalints = [1, 12])
+Solution().basicCalculatorIV(expression="e - 8 + temperature - pressure", evalvars=["e", "temperature"], evalints=[1, 12])

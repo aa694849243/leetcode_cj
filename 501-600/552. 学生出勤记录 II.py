@@ -48,18 +48,18 @@ class Solution:
         a0l0 = 1  # a的数量和尾部l的数量
         a1l0 = 1
         a0l1 = 1
-        a0l2 = 0
+        a0l2 = 0  # 总共两个字符第一次为0
         a1l1 = 0
         a1l2 = 0
-        for i in range(1,n):
-            a0l0_new = (a0l0 + a0l1 + a0l2) % M
-            a0l1_new = a0l0 % M
-            a0l2_new = a0l1 % M
-            a1l0_new = (a1l0 + a1l1 + a1l2 + a0l0 + a0l1 + a0l2) % M
-            a1l1_new = a1l0 % M
-            a1l2_new = a1l1 % M
-            a0l0 = a0l0_new
-            a0l1 = a0l1_new
+        for i in range(1, n):
+            a0l0_new = (a0l0 + a0l1 + a0l2) % M  # 增加P字符
+            a0l1_new = a0l0 % M # 增加L字符
+            a0l2_new = a0l1 % M # 增加L字符
+            a1l0_new = (a1l0 + a1l1 + a1l2 + a0l0 + a0l1 + a0l2) % M # 增加P字符
+            a1l1_new = a1l0 % M # 增加L字符
+            a1l2_new = a1l1 % M # 增加L字符
+            a0l0 = a0l0_new # 增加P字符
+            a0l1 = a0l1_new # 增加p字符
             a0l2 = a0l2_new
             a1l0 = a1l0_new
             a1l1 = a1l1_new

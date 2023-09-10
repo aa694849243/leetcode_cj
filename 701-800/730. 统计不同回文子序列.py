@@ -96,6 +96,7 @@ class Solution(object):
                                 dp[i][j][k] = 2
                             else:
                                 dp[i][j][k] = (2 + sum(dp[i + 1][j - 1][n] for n in range(4))) % mod
+                                # +2是因为空串+k算1个，空串+kk算1个
 
         return sum(dp[0][-1][i] for i in range(4)) % mod
 

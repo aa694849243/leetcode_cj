@@ -1,151 +1,170 @@
-'''一个强密码应满足以下所有条件：
+# 满足以下条件的密码被认为是强密码：
+#
+#
+#  由至少 6 个，至多 20 个字符组成。
+#  包含至少 一个小写 字母，至少 一个大写 字母，和至少 一个数字 。
+#  不包含连续三个重复字符 (比如 "Baaabb0" 是弱密码, 但是 "Baaba0" 是强密码)。
+#
+#
+#  给你一个字符串 password ，返回 将 password 修改到满足强密码条件需要的最少修改步数。如果 password 已经是强密码，则返回 0
+# 。
+#
+#  在一步修改操作中，你可以：
+#
+#
+#  插入一个字符到 password ，
+#  从 password 中删除一个字符，或
+#  用另一个字符来替换 password 中的某个字符。
+#
+#
+#
+#
+#  示例 1：
+#
+#
+# 输入：password = "a"
+# 输出：5
+#
+#
+#  示例 2：
+#
+#
+# 输入：password = "aA1"
+# 输出：3
+#
+#
+#  示例 3：
+#
+#
+# 输入：password = "1337C0d3"
+# 输出：0
+#
+#
+#
+#
+#  提示：
+#
+#
+#  1 <= password.length <= 50
+#  password 由字母、数字、点 '.' 或者感叹号 '!' 组成
+#
+#
+#  Related Topics 贪心 字符串 堆（优先队列）
+#  👍 212 👎 0
+import heapq
 
-由至少6个，至多20个字符组成。
-至少包含一个小写字母，一个大写字母，和一个数字。
-同一字符不能连续出现三次 (比如 "...aaa..." 是不允许的, 但是 "...aa...a..." 是可以的)。
-编写函数 strongPasswordChecker(s)，s 代表输入字符串，如果 s 已经符合强密码条件，则返回0；否则返回要将 s 修改为满足强密码条件的字符串所需要进行修改的最小步数。
 
-插入、删除、替换任一字符都算作一次修改。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/strong-password-checker
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
-
-# 方法参考
-# https://leetcode-cn.com/problems/strong-password-checker/solution/zhi-xing-1ms-ji-bai-100-javajie-ti-si-lu-by-chu-yu/
-from typing import List
-
-
+# leetcode submit region begin(Prohibit modification and deletion)
 class Solution:
     def strongPasswordChecker(self, password: str) -> int:
-        n = len(password)
-        al, nu, Al = False, False, False
-        m = {}
         if not password:
             return 6
-        if password[0].isdigit():
-            nu = True
-        elif password[0].islower():
-            al = True
-        elif password[0].isupper():
-            Al = True
+        n = len(password)
+        al, nl, Al = 0, 0, 0
+        for ch in password:
+            if ch.isupper():
+                Al = 1
+            elif ch.islower():
+                al = 1
+            elif ch.isdigit():
+                nl = 1
         t = 1
+        m = []
         for i in range(1, n):
-            if password[i].isdigit():
-                nu = True
-            elif password[i].islower():
-                al = True
-            elif password[i].isupper():
-                Al = True
             if password[i] == password[i - 1]:
                 t += 1
             else:
                 if t >= 3:
-                    m[i - 1] = t
+                    m.append(t)
                 t = 1
-        if t >= 3:
-            m[i] = t
-        if n < 6:
-            return max(6 - n, 3 - (al + Al + nu))
-        elif n <= 20:
-            flag = 0
-            for i in m:
-                flag += m[i] // 3
-            return max(3 - (al + Al + nu), flag)
-        x = 3 - (al + Al + nu)  # x为缺失值
-        m0, m1, m2 = {}, {}, {}
-        ans = x  # x表示缺失数量，无论如何处理，至少需要转换x次
-        for i in m:  # 分别处理不同余数的值，m2代表余数为2的字典，m1代表余数为1的字典，m0代表余数为0的字典
-            if m[i] % 3 == 2:
-                m2[i] = m[i]
-            elif m[i] % 3 == 1:
-                m1[i] = m[i]
+        if t >= 3:  # m处理所有连续字符超过3的数量
+            m.append(t)
+        if n < 6:  # 小于6，则可以插入到连续字符中间
+            return max(6 - n, 3 - (al + Al + nl))
+        elif n <= 20:  # 小于20，不删除任何字符
+            tmp = sum(x // 3 for x in m)
+            return max(3 - (al + Al + nl), tmp)
+        ans = x = 3 - (al + Al + nl)
+        m0, m1, m2 = [], [], []
+        for i in m:
+            if i % 3 == 2:
+                heapq.heappush(m2, -i)
+            elif i % 3 == 1:
+                heapq.heappush(m1, -i)
             else:
-                m0[i] = m[i]
-        if x > 0:  # 先转换 %3==2的
-            for i in m2:
-                while m2[i] >= 3 and x > 0:  # 转换一次减少3个连续值
+                heapq.heappush(m0, -i)
+        while x > 0 and len(m1) + len(m2) + len(m0) > 0:  # 优先替换连续字符中的字符
+            while len(m2) > 0 and x > 0:  # 先替换余数为2的并字符长度长的，替换一个少三个连续字符
+                tmp = -heapq.heappop(m2)  # 替换长的是为了删除的时候可以尽可能让字母种类更多
+                x -= 1
+                if tmp - 3 >= 3:
+                    heapq.heappush(m2, -(tmp - 3))
+            if x > 0:  # 再替换余数为2的
+                while len(m1) > 0 and x > 0:
+                    tmp = -heapq.heappop(m1)
                     x -= 1
-                    m2[i] -= 3
-                if x == 0:
-                    break
-        if x > 0:  # 再转换 %3==1的
-            for i in m1:
-                while m1[i] >= 3 and x > 0:
+                    if tmp - 3 >= 3:
+                        heapq.heappush(m1, -(tmp - 3))
+            if x > 0:  # 最后替换余数为0的
+                while len(m0) > 0 and x > 0:
+                    tmp = -heapq.heappop(m0)
                     x -= 1
-                    m1[i] -= 3
-                if x == 0:
-                    break
-        if x > 0:  # 最后转换 %3==0的
-            for i in m0:
-                while m0[i] >= 3 and x > 0:
-                    x -= 1
-                    m0[i] -= 3
-                if x == 0:
-                    break
-        if x > 0:  # 转换完后x仍然大于0，说明连续的用光了，随便找一数转换为缺失数种类，再删掉多余的数即可，
+                    if tmp - 3 >= 3:
+                        heapq.heappush(m0, -(tmp - 3))
+        if x > 0:  # 当连续字符不够替换时，则删去多余的部分，替换部分总数为ans
             return ans + n - 20
-        while m0 or m1 or m2:  # 缺失值补充完后仍有连续值，则先删 m0,再删m1,最后删m2
-            k0 = list(m0.keys())
-            for i in k0:
-                a = m0.pop(i)  # 删掉i
-                if a >= 3:
-                    n -= 1
-                    ans += 1
-                    m2[i] = a - 1  # 余数变为2
-                if n == 20:
-                    break
-
-            if n > 20:  # n>20说明删m0不够
-                k1 = list(m1.keys())
-                for i in k1:  # 再删m1
-                    a = m1.pop(i)
-                    if a >= 3:
-                        n -= 2
-                        ans += 2
-                        m2[i] = a - 2  # 每次删2个，余数变为2
-                    if n == 20:
-                        break
-                    if n == 19:  # 剩19个说明多删了，只需要删1个，省下连续的后面再处理
-                        n += 1
-                        ans -= 1
-                        m0[i] = a - 1  # 删2个变为删1个
-                        m2.pop(i)  # 删去刚刚增加的m2的值
-                        break
-
-            if n > 20:  # 删m1没结束
-                k2 = list(m2.keys())
-                for i in k2:  # 最后删m2
-                    a = m2.pop(i)
-                    if a >= 3:
-                        n -= 3
-                        ans += 3
-                        m2[i] = a - 3
-                    if n == 20:
-                        break
-                    elif n == 19:  # 假如剩下22个，删3个变为删2个
-                        n += 1
-                        ans -= 1
-                        m0[i] = a - 2
-                        m2.pop(i)
-                        break
-                    elif n == 18:  # 剩下21个，删3个变为删1个,留下%3==1的值
-                        n += 2
-                        ans -= 2
-                        m1[i] = a - 1
-                        m2.pop(i)
-                        break
-            if n <= 20:  # 删除到固定长度
+        while n > 20 and len(m0) + len(m1) + len(m2) > 0:
+            while len(m0) > 0 and n > 20:  # 先删余数为1的
+                tmp = -heapq.heappop(m0)
+                ans += 1
+                n -= 1
+                if tmp - 1 >= 3:
+                    heapq.heappush(m2, -(tmp - 1))
+            if n == 20:
                 break
-        if n > 20:  # 连续的用完了，删去多余的值即可
+            while len(m1) > 0 and n > 20:  # 再删余数为1的
+                tmp = -heapq.heappop(m1)
+                n -= 2
+                if n >= 20:
+                    ans += 2
+                    if tmp - 2 >= 3:
+                        heapq.heappush(m2, -(tmp - 2))
+                else:
+                    ans += 1
+                    n += 1
+                    if tmp - 1 >= 3:
+                        heapq.heappush(m0, -(tmp - 1))
+            if n == 20:
+                break
+            while len(m2) > 0 and n > 20:  # 最后删余数为2的
+                tmp = -heapq.heappop(m2)
+                n -= 3
+                if n >= 20:
+                    ans += 3
+                    if tmp - 3 >= 3:
+                        heapq.heappush(m2, -(tmp - 3))
+                elif n == 19:
+                    ans += 2
+                    n += 1
+                    if tmp - 2 >= 3:
+                        heapq.heappush(m0, -(tmp - 2))
+                else:
+                    ans += 1
+                    n += 2
+                    if tmp - 1 >= 3:
+                        heapq.heappush(m1, -(tmp - 1))
+        if n > 20:
             return ans + n - 20
-        for i in m2:  # 还有连续的，则检查连续值，依次替换得结果
-            ans += m2[i] // 3
-        for i in m1:
-            ans += m1[i] // 3
-        for i in m0:
-            ans += m0[i] // 3
+        for x in m0:
+            ans += (-x) // 3
+        for x in m1:
+            ans += (-x) // 3
+        for x in m2:
+            ans += (-x) // 3
         return ans
 
 
-Solution().strongPasswordChecker("bbaaaaaaaaaaaaaaacccccc")
+# leetcode submit region end(Prohibit modification and deletion)
+print(
+    Solution().strongPasswordChecker("aaaabbbbccccddeeddeeddeedd")
+)

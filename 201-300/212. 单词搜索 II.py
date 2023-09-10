@@ -1,79 +1,97 @@
-'''
-给定一个二维网格 board 和一个字典中的单词列表 words，找出所有同时在二维网格和字典中出现的单词。
+# 给定一个 m x n 二维字符网格 board 和一个单词（字符串）列表 words， 返回所有二维网格上的单词 。
+#
+#  单词必须按照字母顺序，通过 相邻的单元格 内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母在一个单词中不允许被重复使
+# 用。
+#
+#
+#
+#  示例 1：
+#
+#
+# 输入：board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f",
+# "l","v"]], words = ["oath","pea","eat","rain"]
+# 输出：["eat","oath"]
+#
+#
+#  示例 2：
+#
+#
+# 输入：board = [["a","b"],["c","d"]], words = ["abcb"]
+# 输出：[]
+#
+#
+#
+#
+#  提示：
+#
+#
+#  m == board.length
+#  n == board[i].length
+#  1 <= m, n <= 12
+#  board[i][j] 是一个小写英文字母
+#  1 <= words.length <= 3 * 10⁴
+#  1 <= words[i].length <= 10
+#  words[i] 由小写英文字母组成
+#  words 中的所有字符串互不相同
+#
+#
+#  Related Topics 字典树 数组 字符串 回溯 矩阵
+#  👍 783 👎 0
 
-单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母在一个单词中不允许被重复使用。
 
-示例:
-
-输入:
-words = ["oath","pea","eat","rain"] and board =
-[
-  ['o','a','a','n'],
-  ['e','t','a','e'],
-  ['i','h','k','r'],
-  ['i','f','l','v']
-]
-
-输出: ["eat","oath"]
-说明:
-你可以假设所有输入都由小写字母 a-z 组成。
-
-提示:
-
-你需要优化回溯算法以通过更大数据量的测试。你能否早点停止回溯？
-如果当前单词不存在于所有单词的前缀中，则可以立即停止回溯。什么样的数据结构可以有效地执行这样的操作？散列表是否可行？为什么？ 前缀树如何？如果你想学习如何实现一个基本的前缀树，请先查看这个问题： 实现Trie（前缀树）。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/word-search-ii
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
-'''
-from typing import List
-
-
-# 回溯法 backtrack
-class Solution:
+# leetcode submit region begin(Prohibit modification and deletion)
+class Trie:
     def __init__(self):
-        self.look = {}
-        self.ans = []
+        self.f = {}
 
-    def addword(self, word):
-        tree = self.look
-        for i in word:
-            tree.setdefault(i, {})
-            tree = tree[i]
-        tree['#'] = word
+    def insert(self, word):
+        cur = self.f
+        for c in word:
+            if c not in cur:
+                cur[c] = {}
+            cur = cur[c]
+        cur['#'] = word
 
+    def search(self, word):
+        cur = self.f
+        for c in word:
+            if c not in cur:
+                return False
+            cur = cur[c]
+        return '#' in cur
+
+from typing import List
+class Solution:
     def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
-        if not board or not board[0] or not words:
-            return []
-        cols, rows = len(board[0]), len(board)
+        R, C = len(board), len(board[0])
+        trie = Trie()
         for word in words:
-            self.addword(word)
+            trie.insert(word)
+        self.res = []
 
-        def backtrack(i, j, parent):
+        def dfs(r, c, cur):
+            ch = board[r][c]
+            if '#' in cur[ch]:
+                self.res.append(cur[ch].pop('#'))
+            for nr, nc in [(r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1)]:
+                if 0 <= nr < R and 0 <= nc < C and board[nr][nc] in cur[ch]:
+                    board[r][c] = 0
+                    dfs(nr, nc, cur[ch])
+                    board[r][c] = ch
+            if not cur[ch]:  # 剪枝，删去没有后代的节点
+                cur.pop(ch)
 
-            lttr = board[i][j]
-            currNode = parent[lttr]
-            if '#' in currNode:
-                self.ans.append(currNode.pop('#'))
-            board[i][j] = 0
-            for d1, d2 in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                if 0 <= i + d1 < rows and 0 <= j + d2 < cols and board[i + d1][j + d2] in currNode:
-                    backtrack(i + d1, j + d2, parent[lttr])
-            board[i][j] = lttr
-            # 剪枝，如果currNode为单词终点，且没有孩子节点了，则可以把该节点剪掉
-            if not currNode:
-                parent.pop(lttr)
-
-        for i in range(rows):
-            for j in range(cols):
-                if board[i][j] in self.look:
-                    backtrack(i, j, self.look)
-
-        return self.ans
+        cur = trie.f
+        for r in range(R):
+            for c in range(C):
+                if board[r][c] in cur:
+                    dfs(r, c, cur)
+        return self.res
 
 
-words = ["ab"]
-board =[["a","b"]]
-
-Solution().findWords(board, words)
+# leetcode submit region end(Prohibit modification and deletion)
+print(
+    Solution().findWords(
+        [["o", "a", "a", "n"], ["e", "t", "a", "e"], ["i", "h", "k", "r"], ["i", "f", "l", "v"]],
+        ["oath", "pea", "eat", "rain"])
+)

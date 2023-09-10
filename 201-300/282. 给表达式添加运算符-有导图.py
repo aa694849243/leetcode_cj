@@ -1,71 +1,87 @@
-'''给定一个仅包含数字 0-9 的字符串和一个目标值，在数字之间添加二元运算符（不是一元）+、- 或 * ，返回所有能够得到目标值的表达式。
+# 给定一个仅包含数字 0-9 的字符串 num 和一个目标值整数 target ，在 num 的数字之间添加 二元 运算符（不是一元）+、- 或 * ，返回
+# 所有 能够得到 target 的表达式。
+#
+#  注意，返回表达式中的操作数 不应该 包含前导零。
+#
+#
+#
+#  示例 1:
+#
+#
+# 输入: num = "123", target = 6
+# 输出: ["1+2+3", "1*2*3"]
+# 解释: “1*2*3” 和 “1+2+3” 的值都是6。
+#
+#
+#  示例 2:
+#
+#
+# 输入: num = "232", target = 8
+# 输出: ["2*3+2", "2+3*2"]
+# 解释: “2*3+2” 和 “2+3*2” 的值都是8。
+#
+#
+#  示例 3:
+#
+#
+# 输入: num = "3456237490", target = 9191
+# 输出: []
+# 解释: 表达式 “3456237490” 无法得到 9191 。
+#
+#
+#
+#
+#  提示：
+#
+#
+#  1 <= num.length <= 10
+#  num 仅含数字
+#  -2³¹ <= target <= 2³¹ - 1
+#
+#
+#  Related Topics 数学 字符串 回溯
+#  👍 448 👎 0
 
-示例 1:
 
-输入: num = "123", target = 6
-输出: ["1+2+3", "1*2*3"]
-示例 2:
-
-输入: num = "232", target = 8
-输出: ["2*3+2", "2+3*2"]
-示例 3:
-
-输入: num = "105", target = 5
-输出: ["1*0+5","10-5"]
-示例 4:
-
-输入: num = "00", target = 0
-输出: ["0+0", "0-0", "0*0"]
-示例 5:
-
-输入: num = "3456237490", target = 9191
-输出: []
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/expression-add-operators
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。'''
+# leetcode submit region begin(Prohibit modification and deletion)
 from typing import List
 
-import math
 
-
-# 精妙递归 精妙回溯
 class Solution:
     def addOperators(self, num: str, target: int) -> List[str]:
         n = len(num)
-        ans = []
+        res = []
 
-        def backtrack(index, prev, cur, value, string):
-            if index == n:
-                if value == target and cur==0:
-                    ans.append(''.join(string[1:]))
+        def back_track(i, prev, cur, val, path):
+            cur = cur * 10 + int(num[i])
+            if i == n - 1:
+                if path[-1] == '+' and val + cur == target:
+                    res.append(''.join(path[1:] + [str(cur)]))
+                elif path[-1] == '-' and val - cur == target:
+                    res.append(''.join(path[1:] + [str(cur)]))
+                elif path[-1] == '*' and val - prev + cur * prev == target:
+                    res.append(''.join(path[1:] + [str(cur)]))
                 return
-            cur = cur * 10 + int(num[index])
-            s = str(cur)
-            if cur > 0:
-                backtrack(index + 1, prev, cur, value, string)
-            # +法
-            string.append('+');
-            string.append(s)
-            backtrack(index + 1, cur, 0, value + cur, string)
-            string.pop();
-            string.pop()
-            # 因为题目规定没有一元符号，所以*法和-法都不能+在开头
-            if string:
-                # -法
-                string.append('-');
-                string.append(s)
-                backtrack(index + 1, -cur, 0, value - cur, string)
-                string.pop();
-                string.pop()
-                # *法
-                string.append('*');
-                string.append(s)
-                backtrack(index + 1, prev * cur, 0, value - prev + prev * cur, string)
-                string.pop();
-                string.pop()
+            if cur != 0:
+                back_track(i + 1, prev, cur, val, path)
 
-        backtrack(0, 0, 0, 0, [])
-        return ans
+            # 截断
+            if path[-1] == '+':
+                back_track(i + 1, cur, 0, val + cur, path + [str(cur), '+'])
+                back_track(i + 1, cur, 0, val + cur, path + [str(cur), '-'])
+                back_track(i + 1, cur, 0, val + cur, path + [str(cur), '*'])
+            elif path[-1] == '-':
+                back_track(i + 1, -cur, 0, val - cur, path + [str(cur), '+'])
+                back_track(i + 1, -cur, 0, val - cur, path + [str(cur), '-'])
+                back_track(i + 1, -cur, 0, val - cur, path + [str(cur), '*'])
+            elif path[-1] == '*':
+                back_track(i + 1, cur * prev, 0, val - prev + cur * prev, path + [str(cur), '+'])
+                back_track(i + 1, cur * prev, 0, val - prev + cur * prev, path + [str(cur), '-'])
+                back_track(i + 1, cur * prev, 0, val - prev + cur * prev, path + [str(cur), '*'])
 
-Solution().addOperators('1234567', 45)
+        back_track(0, 0, 0, 0, ['+'])
+        return res
+
+
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().addOperators('232', 6))

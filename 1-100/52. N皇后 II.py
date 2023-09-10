@@ -38,17 +38,18 @@ n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，�
 class Solution:
     def totalNQueens(self, n: int) -> int:
         def could_place(row, col):
-            return not cols[col] and col+row not in m_diagonal and col-row not in p_diagonal
+            return not cols[col] and col + row not in m_diagonal and col - row not in p_diagonal
 
         def place(row, col):
             cols[col] += 1
-            m_diagonal.add((col+row))
-            p_diagonal.add((col-row))
+            m_diagonal.add((col + row))
+            p_diagonal.add((col - row))
 
         def remove(row, col):
             cols[col] = 0
-            m_diagonal.remove(col+row)
-            p_diagonal.remove(col-row)
+            m_diagonal.remove(col + row)
+            p_diagonal.remove(col - row)
+
         def backtrack(row):
             for col in range(n):
                 if could_place(row, col):
@@ -57,13 +58,30 @@ class Solution:
                         self.count += 1
                     else:
                         backtrack(row + 1)
-                    remove(row,col)
+                    remove(row, col)
 
         self.count = 0
         cols = [0] * n
         m_diagonal = set()
-        p_diagonal=set()
+        p_diagonal = set()
         backtrack(0)
         return self.count
-Solution().totalNQueens(5)
 
+
+class Solution:
+    def totalNQueens(self, n: int) -> int:
+        def dfs(r, c, diag1, diag2):
+            if r == n:
+                return 1
+            status = ((1 << n) - 1) & (~(c | diag1 | diag2))
+            ans = 0
+            while status:
+                p = status & (-status)
+                status &= (status - 1)
+                ans += dfs(r + 1, c | p, (diag1 | p) << 1, (diag2 | p) >> 1)
+            return ans
+
+        return dfs(0, 0, 0, 0)
+
+
+Solution().totalNQueens(5)

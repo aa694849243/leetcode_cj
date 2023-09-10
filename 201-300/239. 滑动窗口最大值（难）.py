@@ -43,30 +43,20 @@ from typing import List
 
 # 双端队列 滑动窗口
 # 递减队列，队首保留坐标
+from sortedcontainers import SortedList
+
+
 class Solution:
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
-        if not nums or not k:
-            return []
-        if k == 1:
-            return nums
-
-        def clean_deque(i):
-            if que and que[0] == i - k:
-                que.popleft()
-            while que and nums[i] >= nums[que[-1]]:
-                que.pop()
-            que.append(i)
-
-        que = deque()
-        ans = []
+        lst = SortedList([])
         for i in range(k):
-            clean_deque(i)
-        max_nums = nums[que[0]]
-        ans.append(max_nums)
-        for i in range(k, len(nums)):
-            clean_deque(i)
-            ans.append(nums[que[0]])
-        return ans
+            lst.add(nums[i])
+        res = [lst[-1]]
+        for i,x in enumerate(nums[k:],k):
+            lst.remove(nums[i-k])
+            lst.add(x)
+            res.append(lst[-1])
+        return res
 
 
 # 动态规划 双层遍历

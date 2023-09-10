@@ -62,45 +62,34 @@ from typing import List
 
 class Solution:
     def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
-        i = 0
-        ans = []
-        while i < len(words):
-            s = []
-            lenth = 0
-            count = 0
-            while lenth <= maxWidth + 1 and i < len(words):  # 取出1行
-                s.append(words[i])
-                lenth += (len(words[i]) + 1)
-                count += 1
-                i += 1
-            if lenth > maxWidth + 1:  # 如果是因为长度超出了，则弹出最后一个加进去的
-                lenth = lenth - (len(s.pop()) + 1)
-                i -= 1
-                count -= 1
-            else:  # 如果是到了最后一个，直接pass
-                pass
-            spax = maxWidth + 1 - lenth  # 需要额外补括号的长度
-            n = spax // (count - 1) if count > 1 else spax  # 平均每两个词间需要多+n个括号
-            reminder = spax % (count - 1) if count > 1 else 0  # 冗余的长度
-            st = ''
-            if count == 1:  # 一行只有一个词的情况
-                ans.append(s[0] + spax * ' ')
-            elif i != len(words):  # 非最后一行的情况
-                for m in s[:-1]:
-                    st = st + m + ' ' + ' ' * n + " " if reminder > 0 else st + m + ' ' + ' ' * n
-                    reminder -= 1
-                st += s[-1]
-                ans.append(st)
-            else:  # 最后一行的情况
-                for m in s:
-                    st = st + m + ' '
-                spax = maxWidth - len(st)
-                st = st + ' ' * spax if spax >= 0 else st[:-1]
-                ans.append(st)
-        return ans
+        res = []
+        tmp = []
+        tmp_len = 0
+        for i, word in enumerate(words):
+            if tmp_len + len(word) > maxWidth:
+                resi_space = maxWidth - tmp_len + 1
+                word_cnt = len(tmp)
+                if word_cnt > 1:
+                    add_space = resi_space // (word_cnt - 1) + 1
+                    resi_space = resi_space % (word_cnt - 1)
+                    for j in range(len(tmp) - 1):
+                        tmp[j] += ' ' * add_space + (resi_space > 0) * ' '
+                        resi_space -= 1
+                    res.append(''.join(tmp))
+                else:
+                    res.append(tmp[0] + ' ' * resi_space)
+                tmp = [word]
+                tmp_len = len(word) + 1
+            else:
+                tmp.append(word)
+                tmp_len += len(word) + 1
+        res.append(' '.join(tmp))
+        res[-1] += ' ' * (maxWidth - len(res[-1]))
+        return res
 
 
-words = ["ask", "not", "what", "your", "country", "can", "do", "for", "you", "ask", "what", "you", "can", "do", "for",
-         "your", "country"]
-maxWidth = 16
-Solution().fullJustify(words, maxWidth)
+# leetcode submit region end(Prohibit modification and deletion)
+print(Solution().fullJustify(
+    ["Science", "is", "what", "we", "understand", "well", "enough", "to", "explain", "to", "a", "computer.", "Art", "is", "everything", "else", "we",
+     "do"],
+    20))

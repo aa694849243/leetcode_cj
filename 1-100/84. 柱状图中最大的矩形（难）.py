@@ -21,28 +21,22 @@
 '''
 from typing import List
 
-#此方法为改良版的哨兵+单调栈，改良方法参考网站，特别注意关于右边界的问题
+
+# 此方法为改良版的哨兵+单调栈，改良方法参考网站，特别注意关于右边界的问题
 # https://leetcode-cn.com/problems/longest-common-prefix/solution/zui-chang-gong-gong-qian-zhui-by-leetcode-solution/
 # 延迟单调栈
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
-        if not heights:
-            return 0
-        left, right = [], [len(heights) for _ in range(len(heights))]
-        stack = []
-        i = 0
-        while i < len(heights):
-            while stack and heights[stack[-1]] >= heights[i]:
-                j = stack.pop()
-                right[j] = i
-            if not stack:
-                left.append(-1)
-            else:
-                left.append(stack[-1])
-            stack.append(i)
-            i+=1
-        maxarea=max([(right[i]-left[i]-1)*heights[i] for i in range(len(heights))])
-        return maxarea
+        n = len(heights)
+        stk = []
+        left, right = [-1] * n, [n] * n
+        for i,h in enumerate(heights):
+            while stk and heights[stk[-1]] >= h:
+                right[stk.pop()] = i
+            left[i] = stk[-1] if stk else -1
+            stk.append(i)
+        return max((right[i] - left[i] - 1) * heights[i] for i in range(n))
 
 
-Solution().largestRectangleArea([4,0,0,3,0])
+
+Solution().largestRectangleArea([4, 0, 0, 3, 0])

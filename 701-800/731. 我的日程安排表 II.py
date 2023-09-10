@@ -75,9 +75,12 @@ class MyCalendarTwo:
             else:
                 update(s, e, l, (l + r) // 2, 2 * id + 1)
                 update(s, e, (l + r) // 2, r, 2 * id + 2)
-                self.tree[id]=self.lazy[id]+max(self.tree[2*id+1],self.tree[2*id+2])
-        update(start,end)
-        return self.tree[1]<3
+                self.tree[id] = self.lazy[id] + max(self.tree[2 * id + 1], self.tree[2 * id + 2])
+
+        update(start, end)
+        return self.tree[1] < 3
+
+
 # Your MyCalendarTwo object will be instantiated and called as such:
 # obj = MyCalendarTwo()
 # param_1 = obj.book(start,end)
